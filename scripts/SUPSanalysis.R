@@ -19,9 +19,11 @@ library(plot3D)
 #source("code/multiplot.R")
 
 MA_sheet<-gs_title(x = "SUPs_traits")
-traits <- gs_read(ss = MA_sheet, ws=5)
+traits <- traits_phylo
 
-
+# fix lontra canadensis class
+which(traits$scientific_name.x == "Lontra_canadensis") #42
+traits$class[42] <- "Mammalia"
 # ## INTIAL CLEANING FROM RAW DATA, DO NOT REPEAT ##
 # traits <- gs_read(ss = MA_sheet,ws = 1)
 traits$mean.hra.m2 <- as.numeric(traits$mean.hra.m2)
@@ -80,7 +82,7 @@ dev.off()
 
 ####### 3d scatterplot #######
 par(mfrow=c(1,1))
-traits.all.posmig <- traits.all[-c(which(traits.all$Migration_km == 0)),]
+traits.all.posmig <- traits[-c(which(traits$Migration_km == 0)),]
 # traits.all.posmig$Migration_km <- as.numeric(traits.all.posmig$Migration_km )
 # traits.all.posmig$mean.hra.km2 <- as.numeric(traits.all.posmig$mean.hra.km2 )
 
@@ -120,22 +122,68 @@ write.csv(traits.all, "traits.all.csv")
 # # fitted points for droplines to surface
 # fitpoints <- predict(fit)
 
-scatter3D(x = log10(traits.all.posmig$meanmedian_km), 
+library(plot3D)
+library(rgl)
+library(magick)
+# colour by mass
+scatter3D(x = log10(traits.all.posmig$dispersal_km), 
           y=log10(traits.all.posmig$Migration_km), 
           z=log10(traits.all.posmig$mean.hra.km2), 
           colvar = log10(traits.all.posmig$Mass_kg),
           col = ramp.col(c("#35B779FF", "#26828EFF", "#440154FF")),
-          phi = 20, theta = 20,
-          pch=20, cex =2.5, ticktype = "detailed",
+          phi = 20, theta = 20, #20, 20 looks good
+          pch=20, cex =2, ticktype = "detailed",
           type = "h",
           xlab = "Dispersal (km)",
           ylab = "Migration (km)",
           zlab = "Foraging (km)",
           clab = c("Body Mass",
                    "(kg)"))
-          # ,
-          # surf = list(x = x.pred, y = y.pred, z = z.pred,  
-          #             facets = NA, fit = fitpoints))
+
+# colour by class
+
+colvar <- as.numeric(as.factor(traits$class))
+col <-levels(as.factor(traits$class))
+
+scatter3D(x = log10(traits$dispersal_km), 
+          y=log10(traits$Migration_km + 1), 
+          z=log10(traits$mean.hra.km2), 
+          colvar = colvar,
+          # col = ramp.col(c("#35B779FF", "#26828EFF", "#440154FF")),
+          phi = 90, theta = 0, #20, 20 looks good
+          pch=20, cex =2, ticktype = "detailed",
+          type = "h",
+          xlab = "Dispersal (km)",
+          ylab = "Migration (km)",
+          zlab = "Foraging (km)",
+          clab = col)
+
+library(plot3Drgl)
+plotrgl()
+
+play3d( spin3d( axis = c(0, 0, 1), rpm = 5), duration = 10 )
+
+movie3d(
+  movie="3dAnimatedScatterplot_nozeromig", 
+  spin3d( axis = c(0, 0, 1), rpm = 5),
+  duration = 10, 
+  dir = "~/Desktop",
+  type = "gif", 
+  clean = TRUE
+)
+
+
+library(plotly)
+
+fig <- plot_ly(traits, x = ~log10(dispersal_km), y = ~log10(Migration_km + 1), 
+               z = ~log10(mean.hra.km2), color = ~class)
+fig <- fig %>% add_markers()
+fig <- fig %>% layout(scene = list(xaxis = list(title = 'Dispersal (km)'),
+                                   yaxis = list(title = 'Migration (km + 1)'),
+                                   zaxis = list(title = 'Foraging radius (km)')))
+
+fig
+htmlwidgets::saveWidget(as_widget(fig), "3Dplot.html")
 
 #use theta =, phi = to change orientation of cube, default values 40
 
@@ -653,7 +701,7 @@ mydata$log.disp <- log10(mydata$dispersal_km)
 mydata$log.hr <- log10(mydata$hr.radius)
 mydata <- na.omit(mydata)
 mydata <- mydata[-which(mydata$log.mig == -Inf),]
-mydata <- mydata[-which(mydata$log.disp == -Inf),]
+# mydata <- mydata[-which(mydata$log.disp == -Inf),]
 
 # 
 # mydata$sc.mass <- scale(mydata$log.mass)
@@ -661,7 +709,7 @@ mydata <- mydata[-which(mydata$log.disp == -Inf),]
 # mydata$sc.disp <- scale(log10(mydata$log.disp))
 # mydata$sc.hr <- scale(log10(mydata$log.hr))
 
-test <- decostand(mydata[, 16:18], method = "standardize")
+test <- decostand(mydata[, 12:15], method = "standardize")
 
 v <- var(test)
 View(v)
@@ -689,7 +737,7 @@ hr.bs <- lm(log.hr ~ log.mass, data = mydata)
 plot(log.hr ~ log.mass, data = mydata)
 mydata$hr.resid <- resid(hr.bs)
 
-test2 <- decostand(mydata[, 19:21], method = "standardize")
+test2 <- decostand(mydata[, 16:18], method = "standardize")
 
 v2 <- var(test2)
 View(v2)
