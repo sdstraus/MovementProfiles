@@ -229,17 +229,19 @@ mod2_figs <- ggarrange(mod2_hr, mod2_disp, mod2_mig)
 ggsave(mod2_figs, filename = "mod2_figs.jpg", dpi = 'retina', width = 10, height = 6, units = 'in')
 
 ########### mod 4 ###############
-mod4.1 <- readRDS("mods/mod4.1/mod4_1.rds")
-summary(mod4.1)
+mod4.1 <- readRDS("../mods/mod4.1/mod4_1.rds")
+mod4.1.2 <- readRDS("../mods/mod4.1/mod4_1.2.rds")
+loo(mod4.1.2, mod4.2)
+summary(mod4.1.2)
 
-pred_mod4.1 <- traits_phylo %>%
+pred_mod4.1.2 <- traits_phylo %>%
   group_by(class) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_predicted_draws(mod4.1)
+  add_predicted_draws(mod4.1.2)
 
 mod4.1_hr <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = mean.hra.m2, color = ordered(class))) +
-  stat_lineribbon(data = pred_mod4.1[pred_mod4.1$.category=='meanhram2',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
+  stat_lineribbon(data = pred_mod4.1.2[pred_mod4.1.2$.category=='meanhram2',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
   scale_color_brewer(palette = 'Dark2')+
   scale_x_log10()+
   scale_y_log10()+
@@ -247,7 +249,7 @@ mod4.1_hr <- ggplot() +
 
 mod4.1_disp <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
-  stat_lineribbon(data = pred_mod4.1[pred_mod4.1$.category=='dispersalkm',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
+  stat_lineribbon(data = pred_mod4.1.2[pred_mod4.1.2$.category=='dispersalkm',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
   scale_color_brewer(palette = 'Dark2')+
   scale_x_log10()+
   scale_y_log10()+
@@ -255,27 +257,27 @@ mod4.1_disp <- ggplot() +
 
 mod4.1_mig <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = Migration_km, color = ordered(class))) +
-  stat_lineribbon(data = pred_mod4.1[pred_mod4.1$.category=='Migrationkm',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
+  stat_lineribbon(data = pred_mod4.1.2[pred_mod4.1.2$.category=='Migrationkm',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
   scale_color_brewer(palette = 'Dark2')+
   scale_x_log10()+
   scale_y_log10()+
   cowplot::theme_cowplot()
 
-mod4.1_figs <- ggarrange(mod4.1_hr, mod4.1_disp, mod4.1_mig)
-ggsave(mod4.1_figs, filename = "mod4.1_figs.jpg", dpi = 'retina', width = 10, height = 6, units = 'in')
+mod4.1_figs <- ggarrange(mod4.1_hr, mod4.1_disp, mod4.1_mig, nrow=1)
+ggsave(mod4.1_figs, filename = "mod4.1_figs.jpg", dpi = 'retina', width = 18, height = 6, units = 'in')
 
 ########## mod 3 - media ############
 # mod4.1 <- readRDS("mods/mod4.1/mod4_1.rds")
 summary(mod3)
 
-pred_mod3 <- traits_phylo %>%
+pred_mod3.2 <- traits_phylo %>%
   group_by(media_simplified) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_predicted_draws(mod3)
+  add_predicted_draws(mod3.2)
 
 mod3_hr <- ggplot() +
   geom_point(data = traits_media, aes(x = Mass_kg, y = mean.hra.m2, color = ordered(media_simplified))) +
-  stat_lineribbon(data = pred_mod3[pred_mod3$.category=='meanhram2',], aes(y = .prediction, x = Mass_kg, color = ordered(media_simplified)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
+  stat_lineribbon(data = pred_mod3.2[pred_mod3.2$.category=='meanhram2',], aes(y = .prediction, x = Mass_kg, color = ordered(media_simplified)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
   scale_color_brewer(palette = 'Dark2')+
   scale_x_log10()+
   scale_y_log10()+
@@ -283,7 +285,7 @@ mod3_hr <- ggplot() +
 
 mod3_disp <- ggplot() +
   geom_point(data = traits_media, aes(x = Mass_kg, y = dispersal_km, color = ordered(media_simplified))) +
-  stat_lineribbon(data = pred_mod3[pred_mod3$.category=='dispersalkm',], aes(y = .prediction, x = Mass_kg, color = ordered(media_simplified)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
+  stat_lineribbon(data = pred_mod3.2[pred_mod3.2$.category=='dispersalkm',], aes(y = .prediction, x = Mass_kg, color = ordered(media_simplified)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
   scale_color_brewer(palette = 'Dark2')+
   scale_x_log10()+
   scale_y_log10()+
@@ -291,14 +293,14 @@ mod3_disp <- ggplot() +
 
 mod3_mig <- ggplot() +
   geom_point(data = traits_media, aes(x = Mass_kg, y = Migration_km, color = ordered(media_simplified))) +
-  stat_lineribbon(data = pred_mod3[pred_mod3$.category=='Migrationkm',], aes(y = .prediction, x = Mass_kg, color = ordered(media_simplified)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
+  stat_lineribbon(data = pred_mod3.2[pred_mod3.2$.category=='Migrationkm',], aes(y = .prediction, x = Mass_kg, color = ordered(media_simplified)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
   scale_color_brewer(palette = 'Dark2')+
   scale_x_log10()+
   scale_y_log10()+
   cowplot::theme_cowplot()
 
-mod3_figs <- ggarrange(mod3_hr, mod3_disp, mod3_mig)
-ggsave(mod3_figs, filename = "mod3_figs.jpg", dpi = 'retina', width = 12, height = 6, units = 'in')
+mod3_figs <- ggarrange(mod3_hr, mod3_disp, mod3_mig, nrow=1)
+ggsave(mod3_figs, filename = "mod3_figs.jpg", dpi = 'retina', width = 18, height = 6, units = 'in')
 
 ######## mod 5 - diet ##########
 summary(mod5)

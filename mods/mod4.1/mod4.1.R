@@ -5,15 +5,15 @@ library(dplyr)
 ### load traits
 ######## googlesheets sucks now :(
 
-traits_clean <- read.csv("../../data/SUPs_traits - clean_traits.csv")
+traits_clean <- read.csv("../data/SUPs_traits - clean_traits.csv", fileEncoding="latin1")
 
 ## load phylogeny
 
-one_phylo <- readRDS("../../data/final_phylo.rds")
+one_phylo <- readRDS("../data/final_phylo.rds")
 
 #one_phylo
 
-all_class <- read.csv("../../data/classes.csv")
+all_class <- read.csv("../data/classes.csv")
 
 traits_phylo <- traits_clean %>% 
   dplyr::filter(number_traits_completed ==4) %>% 
@@ -21,17 +21,24 @@ traits_phylo <- traits_clean %>%
   filter(!(class %in% "Insecta")) %>% 
   #bind_rows(shark_1) %>% 
   dplyr::filter(str_replace(scientific_name.x, " ", "_") %in% one_phylo$tip.label) %>% 
-  select(scientific_name.x, dispersal_km, Migration_km, mean.hra.m2, Mass_kg, class) %>% 
+  select(scientific_name.x, dispersal_km, Migration_km, mean.hra.m2, Mass_kg, class, diet_broadest_cat, media_simplified, geographic_range_km2) %>% 
   mutate(scientific_name.x = str_replace(scientific_name.x, " ", "_")) %>% 
   mutate(dispersal_km = dispersal_km + 0.0001) %>% 
   mutate(mean.hra.m2 = as.numeric(as.character(mean.hra.m2))) %>% 
-  mutate(Migration_km = as.numeric(as.character(Migration_km)))
+  mutate(Migration_km = as.numeric(as.character(Migration_km))) %>% 
+  mutate(media_simplified = as.factor(as.character(media_simplified)))
+
+traits_phylo$class <- as.character(traits_phylo$class)
+which(is.na(traits_phylo$class)) #42, Lontra canadensis
+traits_phylo$class[42] <- "Mammalia"
+
+
 
 bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (1|p|class)) + Gamma(link = "log")
 bf_home_range <- bf(mean.hra.m2 ~ log(Mass_kg)+ (1|p|class)) + Gamma(link = "log")
 bf_migration <- bf(Migration_km ~ log(Mass_kg) + (1|p|class)) + hurdle_gamma(link = 'log')
 
-mod4.1 <- brm(bf_dispersal + bf_home_range + bf_migration, data = traits_phylo, chains = 4, cores = 4, 
+mod4.1 <- brm(bf_dispersal + bf_home_range + bf_migration, data = traits_phylo, 
     control = list(adapt_delta = 0.995,max_treedepth = 15))
 
 saveRDS(mod4.1, "mod4_1.rds")

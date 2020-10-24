@@ -55,6 +55,11 @@ traits$hr.radius <- sqrt(traits$mean.hra.km2/pi)
 # #   }
 # # }
 
+
+ggplot(traits, aes(x = log10(dispersal_km))) +
+  geom_histogram(aes(color = class), fill = "white",
+                 position = "identity", bins = 30)) 
+
 ####### for VennDiagram #########
 # how many trait values for each sup?
 length(which(is.na(traits$mean.hra.m2) == F)) #165 
@@ -592,17 +597,17 @@ df2 <- inner_join(x=traits.all, y=pp.pairs, by=c("scientific_name" = "predator")
 library(stats)
 library(gplots)
 
-name <- traits.all$scientific_name
-home.range <- log10(traits.all$mean.hra.m2)
-dispersal <- log10(traits.all$meanmedian_km)
-migration <- log10(traits.all$Migration_km)
-mass <- log10(traits.all$Mass_kg)
+name <- traits$scientific_name
+home.range <- log10(traits$mean.hra.m2)
+dispersal <- log10(traits$dispersal_km)
+migration <- log10(traits$Migration_km)
+mass <- log10(traits$Mass_kg)
 
 cov.mat <- data.frame(home.range, dispersal, migration, mass)
 matrix <- cov(cov.mat)
 # remove cases where migration is zero
 cov.mat2 <- cov.mat[-c(which(cov.mat$migration == "-Inf")),]
-cov.mat2 <- cov.mat2[-c(is.na(cov.mat2$mass == T)),]
+#cov.mat2 <- cov.mat2[-c(is.na(cov.mat2$mass == T)),]
 
 # matrix2 <- cov(cov.mat2, use = "na.or.complete")
 matrix3 <- cov(cov.mat2, use = "pairwise.complete.obs") #go with this one
