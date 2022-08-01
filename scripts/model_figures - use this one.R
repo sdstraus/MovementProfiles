@@ -11,139 +11,6 @@ library(viridis)
 
 setwd("/Users/samstraus/github/SUPSmods/")
 
-######## old mods ########
-## mod0 ###
-mod0_logn <- readRDS("mod0_3/mod0_logn.rds")
-## checking mod0_logn.rds
-loo0 <- loo(mod0_logn)
-plot(loop)
-plot(mod0_logn)
-conditional_effects(mod0_logn, "Mass_kg", resp = "dispersalkm", 
-                    method = "fitted", points = T)
-marginal_effects(mod0_logn)
-pp_check(mod0_logn, resp = "dispersalkm")
-bayes_R2(mod0_logn)
-
-
-mod0_dispersal <- traits_phylo %>%
-  group_by(class) %>% 
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_fitted_draws(mod0_logn, allow_new_levels = TRUE) %>%
-  ggplot(aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
-  geom_line(aes(y = .value, group = paste(class, .draw)), alpha = .01) +
-  geom_point(data = traits_phylo) +
-  scale_color_brewer(palette = "Dark2")+
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()
-
-ggsave(mod0_dispersal, filename = "mod0_dispersal.jpg", dpi = 'retina', width = 6, height = 4, unit = "in")
-
-
-mod0_migration <- traits_phylo %>%
-  group_by(class) %>% 
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_fitted_draws(mod0_logn, allow_new_levels = TRUE) %>%
-  ggplot(aes(x = Mass_kg, y = Migration_km, color = ordered(class))) +
-  geom_line(aes(y = .value, group = paste(class, .draw)), alpha = .01) +
-  geom_point(data = traits_phylo) +
-  scale_color_brewer(palette = "Dark2")+
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()
-
-ggsave(mod0_migration, filename = "mod0_migration.jpg", dpi = 'retina', width = 6, 
-       height = 4, unit = "in")
-
-
-mod0_homerange <- traits_phylo %>%
-  group_by(class) %>% 
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_fitted_draws(mod0_logn, allow_new_levels = TRUE) %>%
-  ggplot(aes(x = Mass_kg, y = hr.radius, color = ordered(class))) +
-  geom_line(aes(y = .value, group = paste(class, .draw)), alpha = .01) +
-  geom_point(data = traits_phylo) +
-  scale_color_brewer(palette = "Dark2")+
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()
-
-ggsave(mod0_homerange, filename = "mod0_homerange.jpg", dpi = 'retina', width = 6, height = 4, unit = "in")
-
-## mod0 ##
-mod1_logn <- readRDS("mod1/mod1_logn.rds")
-summary(mod1_logn)
-loo1 <- loo(mod1_logn)
-
-loo_compare(loo0, loo1)
-kfold1 <- kfold(mod1_logn, K = 10)
-
-mod1_dispersal <- traits_phylo %>%
-  group_by(class) %>% 
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_fitted_draws(mod1_logn, allow_new_levels = TRUE) %>%
-  ggplot(aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
-  geom_line(aes(y = .value, group = paste(class, .draw)), alpha = .01) +
-  geom_point(data = traits_phylo) +
-  scale_color_brewer(palette = "Dark2")+
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()
-
-ggsave(mod1_dispersal, filename = "mod1_dispersal.jpg", dpi = 'retina', width = 6, height = 4, unit = "in")
-
-mod1_migration <- traits_phylo %>%
-  group_by(class) %>% 
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_fitted_draws(mod1_logn, allow_new_levels = TRUE) %>%
-  ggplot(aes(x = Mass_kg, y = Migration_km, color = ordered(class))) +
-  geom_line(aes(y = .value, group = paste(class, .draw)), alpha = .01) +
-  geom_point(data = traits_phylo) +
-  scale_color_brewer(palette = "Dark2")+
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()
-
-ggsave(mod1_migration, filename = "mod1_migration.jpg", dpi = 'retina', width = 6, 
-       height = 4, unit = "in")
-
-
-mod1_homerange <- traits_phylo %>%
-  group_by(class) %>% 
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_fitted_draws(mod1_logn, allow_new_levels = TRUE) %>%
-  ggplot(aes(x = Mass_kg, y = hr.radius, color = ordered(class))) +
-  geom_line(aes(y = .value, group = paste(class, .draw)), alpha = .01) +
-  geom_point(data = traits_phylo) +
-  scale_color_brewer(palette = "Dark2")+
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()
-
-ggsave(mod1_homerange, filename = "mod1_homerange.jpg", dpi = 'retina', width = 6, height = 4, unit = "in")
-
-## mod 4 ##
-mod4 <- readRDS("mod4/mod4_better_model_des.rds")
-loo4 <- loo(mod4)
-loo(mod0, mod4)
-summary(mod4)
-
-mod4_dispersal <- traits_phylo %>%
-  group_by(class) %>% 
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_fitted_draws(mod4, allow_new_levels = TRUE) %>%
-  ggplot(aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
-  geom_line(aes(y = .value, group = paste(class, .draw)), alpha = .01) +
-  geom_point(data = traits_phylo) +
-  scale_color_brewer(palette = "Dark2")+
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()
-
-ggsave(mod4_dispersal, filename = "mod4_dispersal.jpg", dpi = 'retina', width = 6, height = 4, unit = "in")
-
-
-######## new mods #########
 ######## mod 1 - NULL ########
 mod1 <- readRDS("mods/mod1/mod1.rds")
 summary(mod1)
@@ -199,7 +66,7 @@ mod1_figs <- ggarrange(mod1_hr, mod1_disp, mod1_mig)
 ggsave(mod1_figs, filename = "mod1_figs.jpg", dpi = 'retina', width = 10, height = 6, units = 'in')
 
 ############ mod 2 #############
-mod2 <- readRDS("mods/mod2/mod2.rds")
+mod2 <- readRDS("../mods/mod2/mod2.rds")
 summary(mod2)
 
 # traits_phylo %>%
@@ -277,8 +144,10 @@ dispersal_plot <- ggplot() +
                                 "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+
   scale_fill_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
                                 "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+
-  scale_x_log10()+
-  scale_y_log10()+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                   labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                   labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
   ylab("Dispersal distance (km)")
@@ -288,6 +157,7 @@ foraging <- traits_for %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 273)) %>%
   add_predicted_draws(foraging_media)
 
+
 foraging_plot <- ggplot() +
   geom_point(data = traits_for, aes(x = Mass_kg, y = hr.radius, color = ordered(media_foraging))) +
   stat_lineribbon(data = foraging, aes(y = .prediction, x = Mass_kg, color = ordered(media_foraging), fill = ordered(media_foraging)), 
@@ -295,12 +165,15 @@ foraging_plot <- ggplot() +
   scale_color_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
                                 "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+  
   scale_fill_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
-                                "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+ 
-  scale_x_log10()+
-  scale_y_log10()+
+                               "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+ 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
-  ylab("Home range radius (km)")
+  ylab("Foraging radius (km)")
+
 
 migration <- traits_mig %>%
   group_by(media_migration) %>%
@@ -316,8 +189,10 @@ migration_plot <- ggplot() +
                                 "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+  
   scale_fill_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
                                 "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+ 
-  scale_x_log10()+
-  scale_y_log10()+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
   ylab("Migration distance (km)")
@@ -376,7 +251,7 @@ ggsave(media_figs, filename = "../figures/media_figs.jpeg", dpi = 'retina', widt
 # abline(air.media)
 
 
-########### mod 4 ###############
+########### mod 4 - class ###############
 mod4.1 <- readRDS("../mods/mod4.1/mod4_1.rds")
 # mod4.2 <- readRDS("../mods/mod4.2/mod4.2.rds")
 # mod4.1.2 <- readRDS("../mods/mod4.1/mod4_1.2.rds")
@@ -405,7 +280,7 @@ scales::show_col(viridis_pal()(5))
 # "Reptilia" == FDE725FF
  
 
-class_hr <- ggplot() +
+class_foraging <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = hr.radius, color = ordered(class))) +
   stat_lineribbon(data = pred_mod4.1[pred_mod4.1$.category=='hrradius',], 
                   aes(y = .prediction, x = Mass_kg, color = ordered(class), fill = ordered(class)), 
@@ -416,16 +291,18 @@ class_hr <- ggplot() +
   scale_fill_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
                                 "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", 
                                 "Reptilia" = "#FDE725FF"), name ="Class")+  
-  scale_x_log10()+
-  scale_y_log10()+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
-  ylab("Home range radius (km)")
+  ylab("Foraging radius (km)")
 
 pred4.1_disp <- pred_mod4.1[pred_mod4.1$.category=='dispersalkm',]
 #pred4.1_summ <- point_interval(pred4.1_disp, .width = c(0.95, 0.8, 0.5, 0.25))
 
-class_disp <- ggplot()+
+class_dispersal <- ggplot()+
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
   stat_lineribbon(data =pred4.1_disp,
                   aes(y = .prediction, x = Mass_kg,
@@ -437,8 +314,10 @@ class_disp <- ggplot()+
   scale_fill_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
                                 "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", "Reptilia" = "#FDE725FF"), 
                      name ="Class")+  
-  scale_x_log10()+
-  scale_y_log10()+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
   ylab("Dispersal distance (km)")
@@ -446,7 +325,7 @@ class_disp <- ggplot()+
 #ggsave(class_disp, filename = "../figures/mod4.1_disp.jpg", dpi = 'retina', width = 4, height = 4, units = 'in')
 
 
-class_mig <- ggplot() +
+class_migration <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = Migration_km, color = ordered(class))) +
   stat_lineribbon(data = pred_mod4.1[(pred_mod4.1$.category=='Migrationkm')&(pred_mod4.1$.prediction>0),], 
                   aes(y = .prediction, x = Mass_kg, color = ordered(class),fill =ordered(class)), 
@@ -457,8 +336,10 @@ class_mig <- ggplot() +
   scale_fill_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
                                "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", "Reptilia" = "#FDE725FF"), 
                     name ="Class")+  
-  scale_x_log10()+
-  scale_y_log10()+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
   ylab("Migration distance (km)")
@@ -477,13 +358,14 @@ class_mig <- ggplot() +
 other_figs <- ggarrange(mam_hr, mam_disp, mam_mig, nrow=1, common.legend = TRUE, legend = "right")
 Mega_fig <- ggarrange(aves_figs, mam_figs, other_figs, nrow=3)
 
-class_figs <- ggarrange(class_hr, class_disp, class_mig, nrow=1, 
+class_figs <- ggarrange(class_foraging, class_dispersal, class_migration, nrow=1, 
                         common.legend = TRUE, legend = "right", labels = c("d", "e", "f"))
 
-ggsave(class_figs, filename = "../figures/mod4.1_figs.jpg", dpi = 'retina', width = 10, height = 3, units = 'in')
+ggsave(class_figs, filename = "../figures/class_figs.jpg", dpi = 'retina', width = 10, height = 3, units = 'in')
 
 ######## mod 4 - order ########
 # birds
+mod4.3_aves <- readRDS("../mods/mod4.3/mod4.3_aves.rds")
 pred_mod4.3_aves <- aves %>%
   group_by(order) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 159)) %>%
@@ -499,7 +381,7 @@ order_hr_aves <- ggplot() +
   scale_y_log10()+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
-  ylab("Home range radius (km)")
+  ylab("Foraging radius (km)")
 
 order_disp_aves <- ggplot() +
   geom_point(data = aves, aes(x = Mass_kg, y = dispersal_km, color = ordered(order))) +
@@ -528,9 +410,11 @@ order_mig_aves <- ggplot() +
   ylab("Migration distance (km)")
 
 order_aves_figs <- ggarrange(order_hr_aves, order_disp_aves, order_mig_aves, nrow=1, common.legend = TRUE, legend = "right")
-ggsave(order_figs, filename = "../figures/mod4.3_aves_figs_03July2021.jpg", dpi = 'retina', width = 10, height = 5, units = 'in')
+ggsave(order_aves_figs, filename = "../figures/mod4.3_aves_figs.jpg", dpi = 'retina', width = 10, height = 5, units = 'in')
 
 ## mammals
+mod4.3_mam <- readRDS("../mods/mod4.3/mod4.3_mam.rds")
+
 pred_mod4.3_mam <- mam %>%
   group_by(order) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 117)) %>%
@@ -547,7 +431,7 @@ order_hr_mam <- ggplot() +
   scale_y_log10()+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
-  ylab("Home range radius (km)")
+  ylab("Foraging radius (km)")
 
 order_disp_mam <- ggplot() +
   geom_point(data = mam, aes(x = Mass_kg, y = dispersal_km, color = ordered(order))) +
@@ -576,10 +460,11 @@ order_mig_mam <- ggplot() +
   ylab("Migration distance (km)")
 
 order_mam_figs <- ggarrange(order_hr_mam, order_disp_mam, order_mig_mam, nrow=1, common.legend = TRUE, legend = "right")
-ggsave(order_mam_figs, filename = "../figures/mod4.3_mam_figs_03July2021.jpg", dpi = 'retina', width = 10, height = 5, units = 'in')
+ggsave(order_mam_figs, filename = "../figures/mod4.3_mam_figs.jpg", dpi = 'retina', width = 10, height = 5, units = 'in')
 
 
 ## amphibs
+mod4.3_amph <- readRDS("../mods/mod4.3/mod4.3_amph.rds")
 
 pred_mod4.3_amph <- amph %>%
   group_by(order) %>%
@@ -597,7 +482,7 @@ order_hr_amph <- ggplot() +
   scale_y_log10()+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
-  ylab("Home range radius (km)")
+  ylab("Foraging radius (km)")
 
 order_disp_amph <- ggplot() +
   geom_point(data = amph, aes(x = Mass_kg, y = dispersal_km, color = ordered(order))) +
@@ -626,10 +511,10 @@ order_mig_amph <- ggplot() +
   ylab("Migration distance (km)")
 
 order_amph_figs <- ggarrange(order_hr_amph, order_disp_amph, order_mig_amph, nrow=1, common.legend = TRUE, legend = "right")
-ggsave(order_amph_figs, filename = "../figures/mod4.3_amph_figs_03July2021.jpg", dpi = 'retina', width = 10, height = 5, units = 'in')
+ggsave(order_amph_figs, filename = "../figures/mod4.3_amph_figs.jpg", dpi = 'retina', width = 10, height = 5, units = 'in')
 
 ## reptiles
-
+mod4.3_rep <- readRDS("../mods/mod4.3/mod4.3_rep.rds")
 pred_mod4.3_rep <- rep %>%
   group_by(order) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 20)) %>%
@@ -646,7 +531,7 @@ order_hr_rep <- ggplot() +
   scale_y_log10()+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
-  ylab("Home range radius (km)")
+  ylab("Foraging radius (km)")
 
 order_disp_rep <- ggplot() +
   geom_point(data = rep, aes(x = Mass_kg, y = dispersal_km, color = ordered(order))) +
@@ -674,19 +559,23 @@ order_mig_rep <- ggplot() +
   xlab("Body mass (kg)")+
   ylab("Migration distance (km)")
 
+order_rep_figs <- ggarrange(order_hr_rep, order_disp_rep, order_mig_rep, nrow=1, common.legend = TRUE, legend = "right")
+ggsave(order_rep_figs, filename = "../figures/mod4.3_rep_figs.jpg", dpi = 'retina', width = 10, height = 5, units = 'in')
+
+
 order_all_figs <- ggarrange(order_aves_figs, order_mam_figs, order_amph_figs, order_rep_figs, 
                             nrow=4, labels=c("birds", "mammals", "amphibians", "reptiles"), 
                             label.x = 0.05, label.y=1, common.legend = FALSE)
-ggsave(order_all_figs, filename = "../figures/mod4.3_order_figs_05July2021.jpg", dpi = 'retina', width = 10, height = 12, units = 'in')
+ggsave(order_all_figs, filename = "../figures/mod4.3_order_figs.jpg", dpi = 'retina', width = 10, height = 12, units = 'in')
 
 
-order_rep_figs <- ggarrange(order_hr_rep, order_disp_rep, order_mig_rep, nrow=1, common.legend = TRUE, legend = "right")
-ggsave(order_rep_figs, filename = "../figures/mod4.3_rep_figs_03July2021.jpg", dpi = 'retina', width = 10, height = 5, units = 'in')
 
 
 ######## mod 5 - diet ##########
+mod5 <- readRDS("../mods/mod5_2.rds")
 summary(mod5)
 coef(mod5)
+
 pred_mod5 <- traits_phylo %>%
   group_by(diet_broadest_cat) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
@@ -700,7 +589,7 @@ scales::show_col(viridis_pal()(4))
 ## Invertivore == #FDE725FF
 ## Omnivore == #31688EFF
 
-mod5_hr <- ggplot() +
+mod5_foraging <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = hr.radius, color = ordered(diet_broadest_cat))) +
   stat_lineribbon(data = pred_mod5[pred_mod5$.category=='hrradius',], 
                   aes(y = .prediction, x = Mass_kg, color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)),
@@ -709,13 +598,15 @@ mod5_hr <- ggplot() +
                                 "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+  
   scale_fill_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
                                 "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+ 
-  scale_x_log10()+
-  scale_y_log10()+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
-  ylab("Home range radius (km)")
+  ylab("Foraging radius (km)")
 
-mod5_disp <- ggplot() +
+mod5_dispersal <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = dispersal_km, color = ordered(diet_broadest_cat))) +
   stat_lineribbon(data = pred_mod5[pred_mod5$.category=='dispersalkm',], 
                   aes(y = .prediction, x = Mass_kg, color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)), 
@@ -724,13 +615,15 @@ mod5_disp <- ggplot() +
                                 "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+  
   scale_fill_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
                                 "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+
-  scale_x_log10()+
-  scale_y_log10()+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
   ylab("Dispersal distance (km)")
 
-mod5_mig <- ggplot() +
+mod5_migration <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = Migration_km, color = ordered(diet_broadest_cat))) +
   stat_lineribbon(data = pred_mod5[(pred_mod5$.category=='Migrationkm')&(pred_mod5$.prediction>0),],
                   aes(y = .prediction, x = Mass_kg, color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)), 
@@ -739,36 +632,441 @@ mod5_mig <- ggplot() +
                                 "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+  
   scale_fill_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
                                 "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+
-  scale_x_log10()+
-  scale_y_log10()+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
   ylab("Migration distance (km)")
 
-mod5_figs <- ggarrange(mod5_hr, mod5_disp, mod5_mig, nrow = 1, 
+mod5_figs <- ggarrange(mod5_foraging, mod5_dispersal, mod5_migration, nrow = 1, 
                        common.legend = T, legend = "right", labels = c("g", "h", "i"))
 ggsave(mod5_figs, filename = "../figures/mod5_figs.jpg", dpi = 'retina', width = 10, height = 3, units = 'in')
 
 
 mega_fig <- ggarrange(media_figs, class_figs, mod5_figs, nrow=3, common.legend=FALSE)
-ggsave(mega_fig, filename = "../figures/Figure4_03July.jpeg",
+ggsave(mega_fig, filename = "../figures/Figure5_07Jan21.jpeg",
        dpi = "retina", width = 11, height = 9, units = "in")
 
-library(BayesianTools)
-bayesianSetup = createBayesianSetup(
-  likelihood = generateTestDensityMultiNormal(sigma = "no correlation"), 
-  lower = rep(-10, 3), upper = rep(10, 3))
+# library(BayesianTools)
+# bayesianSetup = createBayesianSetup(
+#   likelihood = generateTestDensityMultiNormal(sigma = "no correlation"), 
+#   lower = rep(-10, 3), upper = rep(10, 3))
+# 
+# out <- runMCMC(bayesianSetup = bayesianSetup, sampler = "Metropolis", 
+#                settings = list(iterations = 2000, message = FALSE))
+# 
+# getVolume(out, prior = TRUE)
+# 
+# bayesianSetup = createBayesianSetup(
+#   likelihood = generateTestDensityMultiNormal(sigma = "strongcorrelation"), 
+#   lower = rep(-10, 3), upper = rep(10, 3))
+# 
+# out <- runMCMC(bayesianSetup = bayesianSetup, sampler = "Metropolis", 
+#                settings = list(iterations = 2000, message = FALSE))
+# 
+# getVolume(out, prior = TRUE)
 
-out <- runMCMC(bayesianSetup = bayesianSetup, sampler = "Metropolis", 
-               settings = list(iterations = 2000, message = FALSE))
 
-getVolume(out, prior = TRUE)
+########## Migrators only ##########
 
-bayesianSetup = createBayesianSetup(
-  likelihood = generateTestDensityMultiNormal(sigma = "strongcorrelation"), 
-  lower = rep(-10, 3), upper = rep(10, 3))
+#### Media ####
+foraging_media_migrators <- readRDS( "../mods/foraging_media_migrators.rds")
+dispersal_media_migrators <- readRDS("../mods/dispersal_media_migrators.rds")
+migration_media_migrators <- readRDS("../mods/mod3/migration_media_migrators.rds")
 
-out <- runMCMC(bayesianSetup = bayesianSetup, sampler = "Metropolis", 
-               settings = list(iterations = 2000, message = FALSE))
 
-getVolume(out, prior = TRUE)
+foraging <- traits_for_migrators %>%
+  group_by(media_foraging) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 273)) %>%
+  add_predicted_draws(foraging_media_migrators)
+
+
+foraging_plot <- ggplot() +
+  geom_point(data = traits_for_migrators, aes(x = Mass_kg, y = hr.radius, color = ordered(media_foraging))) +
+  stat_lineribbon(data = foraging, aes(y = .prediction, x = Mass_kg, color = ordered(media_foraging), fill = ordered(media_foraging)), 
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
+                                "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+  
+  scale_fill_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
+                               "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+ 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")
+
+
+
+dispersal <- traits_disp_migrators %>%
+  group_by(media_dispersal) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 180)) %>%
+  add_predicted_draws(dispersal_media_migrators)
+
+dispersal_plot <- ggplot() +
+  geom_point(data = traits_disp_migrators, aes(x = Mass_kg, y = dispersal_km, color = ordered(media_dispersal))) +
+  stat_lineribbon(data = dispersal, aes(y = .prediction, x = Mass_kg, color = ordered(media_dispersal), fill = ordered(media_dispersal)), 
+                  .width = c(.5), alpha = 0.5) +
+  # scale_color_viridis(discrete = T, option ="D", name ="Medium of\n movement")+
+  scale_color_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
+                                "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+
+  scale_fill_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
+                               "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")
+
+
+migration <- traits_mig_migrators %>%
+  group_by(media_migration) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 180)) %>%
+  add_predicted_draws(migration_media_migrators)
+
+migration_plot <- ggplot() +
+  geom_point(data = traits_mig_migrators, aes(x = Mass_kg, y = Migration_km, color = ordered(media_migration))) +
+  stat_lineribbon(data = filter(migration, .prediction>0), aes(y = .prediction, x = Mass_kg, color = ordered(media_migration),  fill = ordered(media_migration)), 
+                  #=='Migrationkm')&(pred_mod5$.prediction>0),],
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
+                                "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+  
+  scale_fill_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
+                               "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+ 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Migration distance (km)")
+
+# disp_for_figs <- ggarrange(foraging_plot, dispersal_plot, nrow = 1, common.legend = T, legend = "right")
+media_figs <- ggarrange(foraging_plot, dispersal_plot, migration_plot, nrow = 1, 
+                        common.legend = T, legend = "right", labels = c("a", "b", "c"))
+ggsave(media_figs, filename = "../figures/migrators_media_figs.jpeg", dpi = 'retina', width = 10, height = 3, units = 'in')
+
+
+#### Class ####
+
+mod_class_migrators <- readRDS("../mods/mod4.1/mod_class_migrators.rds")
+
+pred_class_migrators <- traits_migrators %>%
+  group_by(class) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 184)) %>%
+  add_predicted_draws(mod_class_migrators)
+
+
+class_foraging <- ggplot() +
+  geom_point(data = traits_migrators, aes(x = Mass_kg, y = hr.radius, color = ordered(class))) +
+  stat_lineribbon(data = pred_class_migrators[pred_class_migrators$.category=='hrradius',], 
+                  aes(y = .prediction, x = Mass_kg, color = ordered(class), fill = ordered(class)), 
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+                                "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", 
+                                "Reptilia" = "#FDE725FF"), name ="Class")+  
+  scale_fill_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+                               "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", 
+                               "Reptilia" = "#FDE725FF"), name ="Class")+  
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")
+
+
+pred_class_migrators_disp <- pred_class_migrators[pred_class_migrators$.category=='dispersalkm',]
+
+class_dispersal <- ggplot()+
+  geom_point(data = traits_migrators, aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
+  stat_lineribbon(data =pred_class_migrators_disp,
+                  aes(y = .prediction, x = Mass_kg,
+                      color = ordered(class), fill = ordered(class)),
+                  .width = 0.5, alpha = 0.4)+
+  scale_color_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+                                "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", "Reptilia" = "#FDE725FF"), 
+                     name ="Class")+  
+  scale_fill_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+                               "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", "Reptilia" = "#FDE725FF"), 
+                    name ="Class")+  
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")
+
+
+
+class_migration <- ggplot() +
+  geom_point(data = traits_migrators, aes(x = Mass_kg, y = Migration_km, color = ordered(class))) +
+  stat_lineribbon(data = pred_class_migrators[(pred_class_migrators$.category=='Migrationkm')&(pred_class_migrators$.prediction>0),], 
+                  aes(y = .prediction, x = Mass_kg, color = ordered(class),fill =ordered(class)), 
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+                                "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", "Reptilia" = "#FDE725FF"), 
+                     name ="Class")+  
+  scale_fill_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+                               "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", "Reptilia" = "#FDE725FF"), 
+                    name ="Class")+  
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Migration distance (km)")
+
+class_figs <- ggarrange(class_foraging, class_dispersal, class_migration, nrow=1, 
+                        common.legend = TRUE, legend = "right", labels = c("a", "b", "c"))
+
+
+ggsave(class_figs, filename = "../figures/migrators_class_figs.jpeg", dpi = 'retina', width = 10, height = 3, units = 'in')
+
+#### Diet ####
+
+mod_trophic_migrators <- readRDS("../mods/mod_trophic_migrators.rds")
+
+pred_trophic_migrators <- traits_migrators %>%
+  group_by(diet_broadest_cat) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 184)) %>%
+  add_predicted_draws(mod_trophic_migrators)
+
+trophic_foraging <- ggplot() +
+  geom_point(data = traits_migrators, aes(x = Mass_kg, y = hr.radius, color = ordered(diet_broadest_cat))) +
+  stat_lineribbon(data = pred_trophic_migrators[pred_trophic_migrators$.category=='hrradius',], 
+                  aes(y = .prediction, x = Mass_kg, color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)),
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
+                                "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+  
+  scale_fill_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
+                               "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+ 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")
+
+trophic_dispersal <- ggplot() +
+  geom_point(data = traits_migrators, aes(x = Mass_kg, y = dispersal_km, color = ordered(diet_broadest_cat))) +
+  stat_lineribbon(data = pred_trophic_migrators[pred_trophic_migrators$.category=='dispersalkm',], 
+                  aes(y = .prediction, x = Mass_kg, color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)), 
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
+                                "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+  
+  scale_fill_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
+                               "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")
+
+trophic_migration <- ggplot() +
+  geom_point(data = traits_migrators, aes(x = Mass_kg, y = Migration_km, color = ordered(diet_broadest_cat))) +
+  stat_lineribbon(data = pred_trophic_migrators[(pred_trophic_migrators$.category=='Migrationkm')&(pred_trophic_migrators$.prediction>0),],
+                  aes(y = .prediction, x = Mass_kg, color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)), 
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
+                                "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+  
+  scale_fill_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
+                               "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Migration distance (km)")
+
+trophic_figs <- ggarrange(trophic_foraging, trophic_dispersal, trophic_migration, nrow = 1, 
+                       common.legend = T, legend = "right", labels = c("g", "h", "i"))
+ggsave(trophic_figs, filename = "../figures/trophic_figs.jpg", dpi = 'retina', width = 10, height = 3, units = 'in')
+
+
+############# Non-migrators #############
+
+#### Media ####
+foraging_media_nonmigrators <- readRDS("../mods/foraging_media_nonmigrators.rds")
+dispersal_media_nonmigrators <- readRDS("../mods/dispersal_media_nonmigrators.rds")
+
+
+foraging <- traits_for_nonmigrators %>%
+  group_by(media_foraging) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 130)) %>%
+  add_predicted_draws(foraging_media_nonmigrators)
+
+
+foraging_plot <- ggplot() +
+  geom_point(data = traits_for_nonmigrators, aes(x = Mass_kg, y = hr.radius, color = ordered(media_foraging))) +
+  stat_lineribbon(data = foraging, aes(y = .prediction, x = Mass_kg, color = ordered(media_foraging), fill = ordered(media_foraging)), 
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
+                                "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+  
+  scale_fill_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
+                               "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+ 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")
+
+
+dispersal <- traits_disp_nonmigrators %>%
+  group_by(media_dispersal) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 134)) %>%
+  add_predicted_draws(dispersal_media_nonmigrators)
+
+dispersal_plot <- ggplot() +
+  geom_point(data = traits_disp_nonmigrators, aes(x = Mass_kg, y = dispersal_km, color = ordered(media_dispersal))) +
+  stat_lineribbon(data = dispersal, aes(y = .prediction, x = Mass_kg, color = ordered(media_dispersal), fill = ordered(media_dispersal)), 
+                  .width = c(.5), alpha = 0.5) +
+  # scale_color_viridis(discrete = T, option ="D", name ="Medium of\n movement")+
+  scale_color_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
+                                "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+
+  scale_fill_manual(values = c("air" = "#440154FF","aquatic" = "#FDE725FF", 
+                               "land" = "#5DC863FF", "marine" = "#31688EFF"), name ="Medium of\n movement")+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")
+
+
+media_figs <- ggarrange(foraging_plot, dispersal_plot, nrow = 1, 
+                        common.legend = T, legend = "right", labels = c("a", "b"))
+ggsave(media_figs, filename = "../figures/nonmigrators_media_figs.jpeg", dpi = 'retina', width = 6.7, height = 3, units = 'in')
+
+#### Class ####
+
+mod_class_non_migrators <- readRDS("../mods/mod4.1/mod_class_nonmigrators.rds")
+
+pred_class_nonmigrators <- traits_non_migrators %>%
+  group_by(class) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 137)) %>%
+  add_predicted_draws(mod_class_non_migrators)
+
+
+class_foraging <- ggplot() +
+  geom_point(data = traits_non_migrators, aes(x = Mass_kg, y = hr.radius, color = ordered(class))) +
+  stat_lineribbon(data = pred_class_nonmigrators[pred_class_nonmigrators$.category=='hrradius',], 
+                  aes(y = .prediction, x = Mass_kg, color = ordered(class), fill = ordered(class)), 
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+                                "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", 
+                                "Reptilia" = "#FDE725FF"), name ="Class")+  
+  scale_fill_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+                               "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", 
+                               "Reptilia" = "#FDE725FF"), name ="Class")+  
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")
+
+
+pred_class_nonmigrators_disp <- pred_class_nonmigrators[pred_class_nonmigrators$.category=='dispersalkm',]
+
+class_dispersal <- ggplot()+
+  geom_point(data = traits_non_migrators, aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
+  stat_lineribbon(data =pred_class_nonmigrators_disp,
+                  aes(y = .prediction, x = Mass_kg,
+                      color = ordered(class), fill = ordered(class)),
+                  .width = 0.5, alpha = 0.4)+
+  scale_color_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+                                "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", "Reptilia" = "#FDE725FF"), 
+                     name ="Class")+  
+  scale_fill_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+                               "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", "Reptilia" = "#FDE725FF"), 
+                    name ="Class")+  
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")
+
+
+
+class_figs <- ggarrange(class_foraging, class_dispersal, nrow=1, 
+                        common.legend = TRUE, legend = "right", labels = c("a", "b", "c"))
+
+
+ggsave(class_figs, filename = "../figures/nonmigrators_class_figs.jpeg", dpi = 'retina', width = 6.7, height = 3, units = 'in')
+
+
+#### Diet ####
+
+mod_trophic_nonmigrators <- readRDS("../mods/mod_trophic_nonmigrators.rds")
+
+pred_trophic_nonmigrators <- traits_non_migrators %>%
+  group_by(diet_broadest_cat) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 137)) %>%
+  add_predicted_draws(mod_trophic_nonmigrators)
+
+trophic_foraging <- ggplot() +
+  geom_point(data = traits_non_migrators, aes(x = Mass_kg, y = hr.radius, color = ordered(diet_broadest_cat))) +
+  stat_lineribbon(data = pred_trophic_nonmigrators[pred_trophic_nonmigrators$.category=='hrradius',], 
+                  aes(y = .prediction, x = Mass_kg, color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)),
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
+                                "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+  
+  scale_fill_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
+                               "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+ 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")
+
+trophic_dispersal <- ggplot() +
+  geom_point(data = traits_non_migrators, aes(x = Mass_kg, y = dispersal_km, color = ordered(diet_broadest_cat))) +
+  stat_lineribbon(data = pred_trophic_nonmigrators[pred_trophic_nonmigrators$.category=='dispersalkm',], 
+                  aes(y = .prediction, x = Mass_kg, color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)), 
+                  .width = c(.5), alpha = 0.4) +
+  scale_color_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
+                                "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+  
+  scale_fill_manual(values = c("Carnivore" = "#440154FF","Herbivore" = "#35B779FF", 
+                               "Invertivore" = "#FDE725FF", "Omnivore" = "#31688EFF"), name ="Trophic level")+
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")
+
+
+
+trophic_figs <- ggarrange(trophic_foraging, trophic_dispersal, nrow = 1, 
+                          common.legend = T, legend = "right", labels = c("a", "b"))
+ggsave(trophic_figs, filename = "../figures/nonmig_trophic_figs.jpg", dpi = 'retina', width = 6.7, height = 3, units = 'in')
+
+
+
+
+
+
+
+
