@@ -1,0 +1,13 @@
+name: 3dplot
+title:
+username:
+account: sdstraus
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4589432
+bundleId: 5723306
+url: https://sdstraus.shinyapps.io/3dplot/
+when: 1648144213.36806
+lastSyncTime: 1648144213.36807
+asMultiple: FALSE
+asStatic: FALSE
