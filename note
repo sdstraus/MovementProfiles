@@ -1,3 +1,0 @@
-salloc --time=3:0:0 --ntasks=2 --account=def-rgermain --mem-per-cpu=3000M    
-module load gcc
-module load r/3.5.0
