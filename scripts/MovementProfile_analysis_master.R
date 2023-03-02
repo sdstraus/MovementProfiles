@@ -33,7 +33,7 @@ traits_phylo <- traits_clean %>%
   dplyr::filter(str_replace(scientific_name.x, " ", "_") %in% one_phylo$tip.label) %>% 
   select(scientific_name.x, dispersal_km, Migration_km, mean.hra.m2, Mass_kg, 
          class, order, diet_broadest_cat, media_simplified, media_dispersal, 
-         media_migration, media_foraging) %>% 
+         media_migration, media_foraging, source_dispersal, Migration_source, source_hra) %>% 
   mutate(scientific_name.x = str_replace(scientific_name.x, " ", "_")) %>% 
   mutate(dispersal_km = dispersal_km + 0.0001) %>% 
   mutate(mean.hra.m2 = as.numeric(as.character(mean.hra.m2))) %>% 
@@ -42,7 +42,11 @@ traits_phylo <- traits_clean %>%
   mutate(media_simplified = as.factor(as.character(media_simplified))) %>% 
   mutate(media_foraging = as.factor(media_foraging)) %>% 
   mutate(media_dispersal = as.factor(media_dispersal)) %>% 
-  mutate(media_migration = as.factor(media_migration))
+  mutate(media_migration = as.factor(media_migration)) %>% 
+  mutate(media_foraging = as.factor(media_foraging)) %>% 
+  mutate(Migration_source = as.factor(Migration_source)) %>% 
+  mutate(source_hra = as.factor(source_hra))
+  
 
 traits_phylo$class <- as.character(traits_phylo$class)
 
