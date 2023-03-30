@@ -46,6 +46,8 @@ traits_phylo$order[1] <- "Eulipotyphla"
 rows <- which(traits_phylo$class == "Lepidosauria") # this is a subclass
 traits_phylo$class[rows] <- "Reptilia"
 
+# traits_phylo <- traits_num
+
 #A <- ape::vcv.phylo(one_phylo)
 
 ######## mod 1 - NULL ########
@@ -95,9 +97,9 @@ summary(mod2)
 ######### mod 4 - niche conservatism: by class #########
 # mod 4.1
 # run on compute canada
-bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|p|class)) + Gamma(link = "log")
-bf_home_range <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|p|class)) + Gamma(link = "log")
-bf_migration <- bf(Migration_km ~ log(Mass_kg) + (log(Mass_kg)|p|class)) + hurdle_gamma(link = 'log')
+bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|p|class) + dispersal_year) + Gamma(link = "log")
+bf_home_range <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|p|class) + foraging_year) + Gamma(link = "log")
+bf_migration <- bf(Migration_km ~ log(Mass_kg) + (log(Mass_kg)|p|class) + migration_year) + hurdle_gamma(link = 'log')
 
 mod4.1 <- brm(bf_dispersal + bf_home_range + bf_migration, data = traits_phylo, 
     control = list(adapt_delta = 0.995, max_treedepth = 15), iter = 10000, cores = 4)
@@ -204,7 +206,12 @@ bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (1|p|diet_broadest_cat)) + Gamm
 bf_home_range <- bf(hr.radius ~ log(Mass_kg)+ (1|p|diet_broadest_cat)) + Gamma(link = "log")
 bf_migration <- bf(Migration_km ~ log(Mass_kg) + (1|p|diet_broadest_cat)) + hurdle_gamma(link = 'log')
 
-mod5 <- brm(bf_dispersal + bf_home_range + bf_migration, data = traits_phylo, 
+# test year as fixed effect
+bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (1|p|diet_broadest_cat) + dispersal_year) + Gamma(link = "log")
+bf_home_range <- bf(hr.radius ~ log(Mass_kg)+ (1|p|diet_broadest_cat) + foraging_year) + Gamma(link = "log")
+bf_migration <- bf(Migration_km ~ log(Mass_kg) + (1|p|diet_broadest_cat) + migration_year) + hurdle_gamma(link = 'log')
+
+mod5 <- brm(bf_dispersal + bf_home_range + bf_migration, data = traits_num, 
             control = list(adapt_delta = 0.999, max_treedepth=15), iter = 3000, cores =4)
 saveRDS(mod5, "../mods/mod5_1.rds")
 
@@ -213,12 +220,19 @@ loo5.1 <- loo(mod5, reloo=TRUE)
 saveRDS(loo5.1,"../mods/mod5_1_loo.rds" )
 
 # diff slopes
-bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat)) + Gamma(link = "log")
-bf_home_range <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|p|diet_broadest_cat)) + Gamma(link = "log")
-bf_migration <- bf(Migration_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat)) + hurdle_gamma(link = 'log')
+bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat) + dispersal_year) + Gamma(link = "log")
+bf_home_range <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|p|diet_broadest_cat) + foraging_year) + Gamma(link = "log")
+bf_migration <- bf(Migration_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat) + migration_year) + hurdle_gamma(link = 'log')
 
-mod5.2 <- brm(bf_dispersal + bf_home_range + bf_migration, data = traits_phylo, 
-            control = list(adapt_delta = 0.99, max_treedepth=20), iter = 7000, cores = 4)
+mod5.2 <- brm(bf_dispersal, data = traits_phylo, 
+            control = list(adapt_delta = 0.995, max_treedepth=20), iter = 4000, cores = 4)
+
+mod5.2.for <- brm(bf_home_range, data = traits_phylo, 
+              control = list(adapt_delta = 0.99, max_treedepth=20), iter = 4000, cores = 4)
+
+mod5.2.mig <- brm(bf_migration, data = traits_phylo, 
+                  control = list(adapt_delta = 0.95, max_treedepth=15), iter = 3000, cores = 4)
+
 summary(mod5.2)
 coef(mod5.2)
 mod5.2_loo <- loo(mod5.2, reloo=TRUE) # higher elpd values indicate better fit, mod5.2
