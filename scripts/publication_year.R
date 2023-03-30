@@ -289,3 +289,5 @@ ggplot(filter(traits, foraging_source_type != "db"), aes(y=log10(Mass_kg), x = a
   stat_smooth(method = "lm")
 Anova(lm(log10(Mass_kg)~as.numeric(foraging_year), data = filter(traits, foraging_source_type != "db")))
 
+
+write.csv(traits_num, "../data/Traits_final_cleaned.csv")

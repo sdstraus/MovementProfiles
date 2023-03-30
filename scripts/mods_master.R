@@ -5,50 +5,51 @@ library(rstan)
 
 ### load traits
 ######## googlesheets sucks now :(
-setwd("/Users/sam/github/SUPSmods/scripts")
-traits_clean <- read.csv("../data/Traits_Final.csv", fileEncoding="latin1")
-
-## load phylogeny
-
-one_phylo <- readRDS("../data/final_phylo.rds")
-
-#one_phylo
-
-all_class <- read.csv("../data/classes.csv")
-
-traits_phylo <- traits_clean %>% 
-  dplyr::filter(number_traits_completed ==4) %>% 
-  left_join(all_class, by = c("scientific_name.x" = "scientific_name")) %>% 
-  filter(!(class %in% "Insecta")) %>% 
-  #bind_rows(shark_1) %>% 
-  dplyr::filter(str_replace(scientific_name.x, " ", "_") %in% one_phylo$tip.label) %>% 
-  select(scientific_name.x, dispersal_km, Migration_km, mean.hra.m2, Mass_kg, 
-         class, order, diet_broadest_cat, media_simplified, media_dispersal, 
-         media_migration, media_foraging) %>% 
-  mutate(scientific_name.x = str_replace(scientific_name.x, " ", "_")) %>% 
-  mutate(dispersal_km = dispersal_km + 0.0001) %>% 
-  mutate(mean.hra.m2 = as.numeric(as.character(mean.hra.m2))) %>% 
-  mutate(hr.radius = sqrt((mean.hra.m2/1000000)/pi)) %>% 
-  mutate(Migration_km = as.numeric(as.character(Migration_km))) %>% 
-  mutate(media_simplified = as.factor(as.character(media_simplified))) %>% 
-  mutate(media_foraging = as.factor(media_foraging)) %>% 
-  mutate(media_dispersal = as.factor(media_dispersal)) %>% 
-  mutate(media_migration = as.factor(media_migration))
-
-traits_phylo$class <- as.character(traits_phylo$class)
-
-
-
-which(is.na(traits_phylo$class)) #1, 	Scapanus_townsendii
-traits_phylo$class[1] <- "Mammalia" 
-traits_phylo$order[1] <- "Eulipotyphla" 
-
-rows <- which(traits_phylo$class == "Lepidosauria") # this is a subclass
-traits_phylo$class[rows] <- "Reptilia"
-
-# traits_phylo <- traits_num
+# setwd("/Users/sam/github/SUPSmods/scripts")
+# traits_clean <- read.csv("../data/Traits_Final.csv", fileEncoding="latin1")
+# 
+# ## load phylogeny
+# 
+# one_phylo <- readRDS("../data/final_phylo.rds")
+# 
+# #one_phylo
+# 
+# all_class <- read.csv("../data/classes.csv")
+# 
+# traits_phylo <- traits_clean %>% 
+#   dplyr::filter(number_traits_completed ==4) %>% 
+#   left_join(all_class, by = c("scientific_name.x" = "scientific_name")) %>% 
+#   filter(!(class %in% "Insecta")) %>% 
+#   #bind_rows(shark_1) %>% 
+#   dplyr::filter(str_replace(scientific_name.x, " ", "_") %in% one_phylo$tip.label) %>% 
+#   select(scientific_name.x, dispersal_km, Migration_km, mean.hra.m2, Mass_kg, 
+#          class, order, diet_broadest_cat, media_simplified, media_dispersal, 
+#          media_migration, media_foraging) %>% 
+#   mutate(scientific_name.x = str_replace(scientific_name.x, " ", "_")) %>% 
+#   mutate(dispersal_km = dispersal_km + 0.0001) %>% 
+#   mutate(mean.hra.m2 = as.numeric(as.character(mean.hra.m2))) %>% 
+#   mutate(hr.radius = sqrt((mean.hra.m2/1000000)/pi)) %>% 
+#   mutate(Migration_km = as.numeric(as.character(Migration_km))) %>% 
+#   mutate(media_simplified = as.factor(as.character(media_simplified))) %>% 
+#   mutate(media_foraging = as.factor(media_foraging)) %>% 
+#   mutate(media_dispersal = as.factor(media_dispersal)) %>% 
+#   mutate(media_migration = as.factor(media_migration))
+# 
+# traits_phylo$class <- as.character(traits_phylo$class)
+# 
+# 
+# 
+# which(is.na(traits_phylo$class)) #1, 	Scapanus_townsendii
+# traits_phylo$class[1] <- "Mammalia" 
+# traits_phylo$order[1] <- "Eulipotyphla" 
+# 
+# rows <- which(traits_phylo$class == "Lepidosauria") # this is a subclass
+# traits_phylo$class[rows] <- "Reptilia"
+# 
 
 #A <- ape::vcv.phylo(one_phylo)
+
+traits_phylo <- read.csv("../data/Traits_final_cleaned.csv", fileEncoding="latin1")
 
 ######## mod 1 - NULL ########
 bf_dispersal <- bf(dispersal_km ~ 1) + Gamma(link = "log")
