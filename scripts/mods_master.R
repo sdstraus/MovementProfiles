@@ -49,7 +49,7 @@ library(rstan)
 
 #A <- ape::vcv.phylo(one_phylo)
 
-traits_phylo <- read.csv("../data/Traits_final_cleaned.csv", fileEncoding="latin1")
+traits_phylo <- read.csv("data/Traits_final_cleaned.csv", fileEncoding="latin1")
 
 ######## mod 1 - NULL ########
 bf_dispersal <- bf(dispersal_km ~ 1) + Gamma(link = "log")
@@ -212,8 +212,8 @@ bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (1|p|diet_broadest_cat) + dispe
 bf_home_range <- bf(hr.radius ~ log(Mass_kg)+ (1|p|diet_broadest_cat) + foraging_year) + Gamma(link = "log")
 bf_migration <- bf(Migration_km ~ log(Mass_kg) + (1|p|diet_broadest_cat) + migration_year) + hurdle_gamma(link = 'log')
 
-mod5 <- brm(bf_dispersal + bf_home_range + bf_migration, data = traits_num, 
-            control = list(adapt_delta = 0.999, max_treedepth=15), iter = 3000, cores =4)
+mod5 <- brm(bf_dispersal + bf_home_range + bf_migration, data = traits_phylo, 
+            control = list(adapt_delta = 0.99, max_treedepth=15), iter = 3000, cores =4)
 saveRDS(mod5, "../mods/mod5_1.rds")
 
 options(loo.cores = 4)
@@ -221,9 +221,9 @@ loo5.1 <- loo(mod5, reloo=TRUE)
 saveRDS(loo5.1,"../mods/mod5_1_loo.rds" )
 
 # diff slopes
-bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat) + dispersal_year) + Gamma(link = "log")
-bf_home_range <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|p|diet_broadest_cat) + foraging_year) + Gamma(link = "log")
-bf_migration <- bf(Migration_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat) + migration_year) + hurdle_gamma(link = 'log')
+bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat)) + Gamma(link = "log")
+bf_home_range <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|p|diet_broadest_cat)) + Gamma(link = "log")
+bf_migration <- bf(Migration_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat)) + hurdle_gamma(link = 'log')
 
 mod5.2 <- brm(bf_dispersal, data = traits_phylo, 
             control = list(adapt_delta = 0.995, max_treedepth=20), iter = 4000, cores = 4)
