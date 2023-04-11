@@ -221,11 +221,11 @@ loo5.1 <- loo(mod5, reloo=TRUE)
 saveRDS(loo5.1,"../mods/mod5_1_loo.rds" )
 
 # diff slopes
-bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat)) + Gamma(link = "log")
+bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat) + dispersal_year) + Gamma(link = "log")
 bf_home_range <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|p|diet_broadest_cat)) + Gamma(link = "log")
 bf_migration <- bf(Migration_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat)) + hurdle_gamma(link = 'log')
 
-mod5.2 <- brm(bf_dispersal, data = traits_phylo, 
+mod5.2.disp <- brm(bf_dispersal, data = traits_phylo, 
             control = list(adapt_delta = 0.995, max_treedepth=20), iter = 4000, cores = 4)
 
 mod5.2.for <- brm(bf_home_range, data = traits_phylo, 
