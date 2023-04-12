@@ -14,24 +14,44 @@ levels(traits_phylo$diet_broadest_cat)
 ##### Trophic Guild #####
 
 # random slope, no year
-bf_dispersal_trophic_noyear <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat)) + Gamma(link = "log")
-bf_home_range_trophic_noyear <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|p|diet_broadest_cat)) + Gamma(link = "log")
-bf_migration_trophic_noyear <- bf(Migration_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat)) + hurdle_gamma(link = 'log')
+bf_dispersal_trophic_noyear <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat)) + lognormal()
+bf_home_range_trophic_noyear <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|p|diet_broadest_cat)) + lognormal()
+bf_migration_trophic_noyear <- bf(Migration_km ~ log(Mass_kg) + (log(Mass_kg)|p|diet_broadest_cat)) + hurdle_lognormal()
 
+bprior <- prior(normal(0,10), class = 'b', coef = logMass_kg,
+                resp = "dispersalkm")+
+          prior(normal(0,10), class = 'b', coef = Intercept,
+                resp = "dispersalkm")
+
+bprior <- c(set_prior("normal(0,10)", class = "b", coef = "logMass_kg"),
+            set_prior("student_t(3, 3 , 10)", class = "Intercept"))
+            # set_prior("student_t(3, 3 , 10)", class = "sd", coef = "Intercept", group = "diet_broadest_cat"),
+            # set_prior("student_t(3, 3 , 10)", class = "sd", coef = "logMass_kg", group = "diet_broadest_cat"))
+
+get_prior(bf_dispersal_trophic_noyear, data = traits_phylo, family = gamma())
 
 trophic.disp_noyear <- brm(bf_dispersal_trophic_noyear, data = traits_phylo, 
-                   control = list(adapt_delta = 0.995, max_treedepth=20), iter = 4000, cores = 4)
+                   control = list(adapt_delta = 0.995, max_treedepth=20), 
+                   iter = 3000, cores = 4, prior = bprior)
+
+get_prior(bf_home_range_trophic_noyear, data = traits_phylo, family = gamma())
+
+bprior <- c(set_prior("normal(0,10)", class = "b", coef = "logMass_kg"),
+            set_prior("student_t(3, 3 , 10)", class = "Intercept"))
 
 trophic.for_noyear <- brm(bf_home_range_trophic_noyear, data = traits_phylo, 
-                  control = list(adapt_delta = 0.99, max_treedepth=20), iter = 4000, cores = 4)
+                  control = list(adapt_delta = 0.995, max_treedepth=20), 
+                  iter = 3000, cores = 4, prior = bprior)
+
 
 trophic.mig_noyear <- brm(bf_migration_trophic_noyear, data = traits_phylo, 
-                  control = list(adapt_delta = 0.95, max_treedepth=15), iter = 3000, cores = 4)
+                  control = list(adapt_delta = 0.995, max_treedepth=20), 
+                  iter = 5000, cores = 4)
 
 
-saveRDS(trophic.disp_noyear, "../mods/mod4.1/trophic.disp_noyear.rds")
-saveRDS(trophic.for_noyear, "../mods/mod4.1/trophic.for_noyear.rds")
-saveRDS(trophic.mig_noyear, "../mods/mod4.1/trophic.mig_noyear.rds")
+saveRDS(trophic.disp_noyear, "mods/mod4.1/trophic.disp_noyear.rds")
+saveRDS(trophic.for_noyear, "mods/mod4.1/trophic.for_noyear.rds")
+saveRDS(trophic.mig_noyear, "mods/mod4.1/trophic.mig_noyear.rds")
 
 
 # random slope, with year
