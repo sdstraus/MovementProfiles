@@ -38,12 +38,14 @@ trophic_noyear_prior_mig <- prior(normal(0,4),class = 'b', coef = logMass_kg) +
   prior(student_t(6, 0, 2.9), class = 'sd') +
   prior(student_t(3, 0, 2.9), class = 'sigma')
 
-
 ## 1 divergent transitions, see if we can fix that 
+
+## filtered is na migration data in order to compare with the year model 
 trophic.mig_noyear <- brm(bf_migration_trophic_noyear, data = traits_phylo, 
                   control = list(adapt_delta = 0.995, max_treedepth=20), iter = 3000, cores = 4, 
                   prior = trophic_noyear_prior_mig)
 
+trophic.mig_noyear <- add_criterion(trophic.mig_noyear, "loo")
 
 saveRDS(trophic.disp_noyear, "mods/mod4.1/trophic.disp_noyear.rds")
 saveRDS(trophic.for_noyear, "mods/mod4.1/trophic.for_noyear.rds")
@@ -79,15 +81,16 @@ trophic.for_withyear <- brm(bf_home_range_trophic_withyear, data = traits_phylo,
                          prior = trophic_year_prior_for)
 
 
-trophic_year_prior_mig <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
-  prior(normal(0,5),class = 'b', coef = migration_year) +
-  prior(student_t(2, 0, 3), class = 'Intercept') +
-  prior(student_t(6, 0, 2.9), class = 'sd') +
-  prior(student_t(5, 0, 2.9), class = 'sigma')
+##1 divergent transitions 
+trophic_year_prior_mig <- prior(normal(0,2),class = 'b', coef = logMass_kg) +
+  prior(normal(0,2),class = 'b', coef = migration_year) +
+  prior(student_t(5, 0, 3), class = 'Intercept') +
+  prior(student_t(4, 0, 2.9), class = 'sd') +
+  prior(student_t(4, 0, 2.9), class = 'sigma') 
 
 
 trophic.mig_withyear <- brm(bf_migration_trophic_withyear, data = traits_phylo, 
-                         control = list(adapt_delta = 0.95, max_treedepth=15), iter = 5000, cores = 4,
+                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 5000, cores = 4,
                          prior = trophic_year_prior_mig)
 
 saveRDS(trophic.disp_withyear, "mods/mod4.1/trophic.disp_withyear.rds")
