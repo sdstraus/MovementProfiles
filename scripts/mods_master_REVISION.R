@@ -33,7 +33,7 @@ trophic.for_noyear <- brm(bf_home_range_trophic_noyear, data = traits_phylo,
                   control = list(adapt_delta = 0.995, max_treedepth=20), iter = 2000, cores = 4,
                   prior = trophic_noyear_prior)
 
-trophic_noyear_prior_mig <- prior(normal(0,4),class = 'b', coef = logMass_kg) +
+trophic_noyear_prior_mig <- prior(normal(0,2),class = 'b', coef = logMass_kg) +
   prior(student_t(3, 0, 3), class = 'Intercept') +
   prior(student_t(6, 0, 2.9), class = 'sd') +
   prior(student_t(3, 0, 2.9), class = 'sigma')
@@ -45,11 +45,29 @@ trophic.mig_noyear <- brm(bf_migration_trophic_noyear, data = traits_phylo,
                   control = list(adapt_delta = 0.995, max_treedepth=20), iter = 3000, cores = 4, 
                   prior = trophic_noyear_prior_mig)
 
-trophic.mig_noyear <- add_criterion(trophic.mig_noyear, "loo")
-
 saveRDS(trophic.disp_noyear, "mods/mod4.1/trophic.disp_noyear.rds")
 saveRDS(trophic.for_noyear, "mods/mod4.1/trophic.for_noyear.rds")
 saveRDS(trophic.mig_noyear, "mods/mod4.1/trophic.mig_noyear.rds")
+
+
+# multivariate model
+
+
+trophic_noyear_all <- prior(normal(0,3),class = 'b', coef = logMass_kg, resp = "dispersalkm") +
+  prior(student_t(4, 0, 3), class = 'Intercept', resp = "dispersalkm") +
+  prior(normal(0,3),class = 'b', coef = logMass_kg, resp = "hrradius") +
+  prior(student_t(4, 0, 3), class = 'Intercept', resp = "hrradius") +
+  prior(normal(0,3),class = 'b', coef = logMass_kg, resp = "Migrationkm") +
+  prior(student_t(3, 0, 3), class = 'Intercept', resp = "Migrationkm") 
+  
+
+trophic_all_noyear <- brm(bf_dispersal_trophic_noyear + bf_home_range_trophic_noyear + bf_migration_trophic_noyear, data = traits_phylo, 
+                          control = list(adapt_delta = 0.995, max_treedepth=20), iter = 3000, cores = 4, 
+                          prior = trophic_noyear_all)
+
+
+
+
 
 
 # random slope, with year
