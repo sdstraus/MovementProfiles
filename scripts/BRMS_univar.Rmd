@@ -1,0 +1,56 @@
+---
+title: "BRMS univariate models"
+author: "Sam Straus and Melissa Guzman"
+date: "12/04/2023"
+output: html_document
+---
+
+```{r}
+library(brms)
+library(stringr)
+library(dplyr)
+library(rstan)
+
+### load traits
+
+traits_phylo <- read.csv("data/Traits_final_cleaned.csv", fileEncoding="latin1")
+
+traits_phylo$diet_broadest_cat <- as.factor(traits_phylo$diet_broadest_cat)
+traits_phylo$diet_broadest_cat <- droplevels(traits_phylo$diet_broadest_cat)
+levels(traits_phylo$diet_broadest_cat)
+
+```
+
+Trophic guild, random slope and intercept, include year
+
+```{r}
+
+# random slope, with year
+bf_dispersal_trophic_withyear <- bf(dispersal_km ~ log(Mass_kg) + 
+                                  (log(Mass_kg)|p|diet_broadest_cat) + dispersal_year) + lognormal()
+bf_home_range_trophic_withyear <- bf(hr.radius ~ log(Mass_kg)+ 
+                                  (log(Mass_kg)|p|diet_broadest_cat) + foraging_year) + lognormal()
+bf_migration_trophic_withyear <- bf(Migration_km ~ log(Mass_kg) + 
+                                (log(Mass_kg)|p|diet_broadest_cat) + migration_year) + hurdle_lognormal()
+
+
+bprior_disp <- c(set_prior("normal(0,10)", class = "b", coef = "logMass_kg"),
+            set_prior("normal(0,10", class = "b", coef = "dispersal_year"),
+            set_prior("student_t(3, 3 , 10)", class = "Intercept"))
+
+
+trophic.disp_withyear <- brm(bf_dispersal_trophic_withyear, data = traits_phylo, 
+                          control = list(adapt_delta = 0.995, max_treedepth=20), 
+                          iter = 6000, cores = 4, prior = bprior)
+
+trophic.for_withyear <- brm(bf_home_range_trophic_withyear, data = traits_phylo, 
+                         control = list(adapt_delta = 0.99, max_treedepth=20), 
+                         iter = 6000, cores = 4, prior = bprior)
+
+trophic.mig_withyear <- brm(bf_migration_trophic_withyear, data = traits_phylo, 
+                         control = list(adapt_delta = 0.95, max_treedepth=15), 
+                         iter = 6000, cores = 4, prior = bprior)
+
+
+
+```
