@@ -22,46 +22,88 @@ levels(traits_phylo$diet_broadest_cat)
 
 Trophic guild, random slope and intercept, include year
 
-```{r}
-
-# random slope, with year
-bf_dispersal_trophic_withyear <- bf(dispersal_km ~ log(Mass_kg) + 
-                                  (log(Mass_kg)|p|diet_broadest_cat) + dispersal_year) + lognormal()
-bf_home_range_trophic_withyear <- bf(hr.radius ~ log(Mass_kg)+ 
-                                  (log(Mass_kg)|p|diet_broadest_cat) + foraging_year) + lognormal()
-bf_migration_trophic_withyear <- bf(Migration_km ~ log(Mass_kg) + 
-                                (log(Mass_kg)|p|diet_broadest_cat) + migration_year) + hurdle_lognormal()
+```{r guild-univariate-year}
+bf_dispersal_trophic_withyear <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|diet_broadest_cat) + dispersal_year) + lognormal(link = "identity")
+bf_home_range_trophic_withyear <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|diet_broadest_cat) + foraging_year) + lognormal(link = "identity")
+bf_migration_trophic_withyear <- bf(Migration_km ~ log(Mass_kg) + (log(Mass_kg)|diet_broadest_cat) + migration_year) + hurdle_lognormal(link = 'identity')
 
 
-trophic_noyear_prior <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
-  prior(student_t(4, 0, 4), class = 'Intercept') +
+trophic_year_prior_disp <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
+  prior(normal(0,5),class = 'b', coef = dispersal_year) +
+  prior(student_t(5, 0, 3), class = 'Intercept') +
   prior(student_t(6, 0, 2.9), class = 'sd') +
-  prior(student_t(4, 0, 2.9), class = 'sigma')
+  prior(student_t(5, 0, 2.9), class = 'sigma')
 
-
+## works
 trophic.disp_withyear <- brm(bf_dispersal_trophic_withyear, data = traits_phylo, 
-                          control = list(adapt_delta = 0.995, max_treedepth=20), 
-                          iter = 2000, cores = 4, prior = trophic_noyear_prior)
+                          control = list(adapt_delta = 0.995, max_treedepth=20), iter = 3000, cores = 16,
+                          prior = trophic_year_prior_disp)
 
-trophic.for_withyear <- brm(bf_home_range_trophic_withyear, data = traits_phylo, 
-                         control = list(adapt_delta = 0.995, max_treedepth=20), 
-                         iter = 2000, cores = 4, prior = trophic_noyear_prior)
-
-trophic_noyear_prior_mig <- prior(normal(0,4),class = 'b', coef = logMass_kg) +
-  prior(student_t(3, 0, 4), class = 'Intercept') +
+trophic_year_prior_for <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
+  prior(normal(0,5),class = 'b', coef = foraging_year) +
+  prior(student_t(5, 0, 3), class = 'Intercept') +
   prior(student_t(6, 0, 2.9), class = 'sd') +
-  prior(student_t(3, 0, 2.9), class = 'sigma')
+  prior(student_t(5, 0, 2.9), class = 'sigma')
+
+# works
+trophic.for_withyear <- brm(bf_home_range_trophic_withyear, data = traits_phylo, 
+                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 3000, cores = 16,
+                         prior = trophic_year_prior_for)
+
+
+## works
+trophic_year_prior_mig <- prior(normal(0,2),class = 'b', coef = logMass_kg) +
+  prior(normal(0,2),class = 'b', coef = migration_year) +
+  prior(student_t(5, 0, 3), class = 'Intercept') +
+  prior(student_t(4, 0, 2.9), class = 'sd') +
+  prior(student_t(4, 0, 2.9), class = 'sigma') 
+
 
 trophic.mig_withyear <- brm(bf_migration_trophic_withyear, data = traits_phylo, 
-                         control = list(adapt_delta = 0.995, max_treedepth=20), 
-                         iter = 2000, cores = 4, prior = trophic_noyear_prior_mig)
+                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 5000, cores = 16,
+                         prior = trophic_year_prior_mig)
 
 
 
 ```
 
+```{r save-guild-mods}
 
-Class, Random intercept and slope, with year
+saveRDS(trophic.disp_withyear, "../mods/trophic.disp_withyear.rds")
+saveRDS(trophic.for_withyear, "../mods/trophic.for_withyear.rds")
+saveRDS(trophic.mig_withyear, "../mods/trophic.mig_withyear.rds")
+
+```
+
+
+Trophic guild, mulivariate with year
+```{r trophic-multivar-year}
+
+trophic_withyear_prior_multivar <- prior(normal(0,5), class = 'b', 
+                              coef = logMass_kg, resp = "dispersalkm") +
+  prior(student_t(6, 0, 2.9), class = 'sd', resp = "dispersalkm") +
+  prior(student_t(5, 0, 2.9), class = 'sigma', resp = "dispersalkm")+
+  prior(normal(0,5), class = 'b', coef = logMass_kg, resp = "hrradius") +
+  prior(student_t(6, 0, 2.9), class = 'sd', resp = "hrradius") +
+  prior(student_t(5, 0, 2.9), class = 'sigma', resp = "hrradius") +
+  prior(normal(0,5), class = 'b', coef = logMass_kg, resp = "Migrationkm") +
+  prior(student_t(5, 0, 3), class = 'Intercept', resp = "Migrationkm") +
+  prior(student_t(4, 0, 2.9), class = 'sd', resp = "Migrationkm") +
+  prior(student_t(4, 0, 2.9), class = 'sigma',resp = "Migrationkm")
+
+trophic_multivar_withyear <- brm(bf_dispersal_trophic_withyear + bf_home_range_trophic_withyear +
+    bf_migration_trophic_withyear, data = traits_phylo, 
+    control = list(adapt_delta = 0.995, max_treedepth = 20), 
+    iter = 10000, cores = 16, prior = trophic_withyear_prior_multivar)
+
+
+ saveRDS(class_multivar, "../mods/class_multivar_withyear.rds")
+
+
+```
+
+
+Class, Univariate, Random intercept and slope, with year
 ```{r univariate-class-withyear}
 
 # random slope, with year
@@ -95,15 +137,15 @@ class.mig_withyear <- brm(bf_migration_class_withyear, data = traits_phylo,
 ```
 Save rds files
 ```{r}
-saveRDS(class.disp_withyear, "../mods/mod4.1/class.disp_withyear.rds")
-saveRDS(class.for_withyear, "../mods/mod4.1/class.for_withyear.rds")
-saveRDS(class.mig_withyear, "../mods/mod4.1/class.mig_withyear.rds")
+saveRDS(class.disp_withyear, "../mods/class.disp_withyear.rds")
+saveRDS(class.for_withyear, "../mods/class.for_withyear.rds")
+saveRDS(class.mig_withyear, "../mods/class.mig_withyear.rds")
 
 ```
 
 
 Class, but multivariate
-```{r}
+```{r multivariate-class-withyear}
 
 class_withyear_prior_multivar <- prior(normal(0,5), class = 'b', 
                               coef = logMass_kg, resp = "dispersalkm") +
@@ -124,6 +166,6 @@ class_multivar <- brm(bf_dispersal_class_withyear + bf_home_range_class_withyear
     control = list(adapt_delta = 0.995, max_treedepth = 20), 
     iter = 4000, cores = 16, prior = class_withyear_prior_multivar)
 
-saveRDS(class_multivar, "../mods/mod4.1/class_multivar_withyear.rds")
+saveRDS(class_multivar, "../mods/class_multivar_withyear.rds")
 
 ````
