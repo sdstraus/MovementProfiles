@@ -15,7 +15,7 @@ library(ggdist)
 
 
 # load model
-mod4.1 <- readRDS("../mods/mod4.1/mod4_1.rds")
+mod4.1 <- readRDS("mods/class_multivar_withyear.rds")
 
 # summary info
 loo(mod4.1)
