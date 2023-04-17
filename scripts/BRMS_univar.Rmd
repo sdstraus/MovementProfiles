@@ -18,6 +18,9 @@ traits_phylo$diet_broadest_cat <- as.factor(traits_phylo$diet_broadest_cat)
 traits_phylo$diet_broadest_cat <- droplevels(traits_phylo$diet_broadest_cat)
 levels(traits_phylo$diet_broadest_cat)
 
+## remove eland because source is missing!
+traits_phylo <- traits_phylo[-which(traits_phylo$scientific_name.x=='Tragelaphus_oryx'),]
+
 ```
 
 Trophic guild, random slope and intercept, include year
@@ -36,7 +39,8 @@ trophic_year_prior_disp <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
 
 ## works
 trophic.disp_withyear <- brm(bf_dispersal_trophic_withyear, data = traits_phylo, 
-                          control = list(adapt_delta = 0.995, max_treedepth=20), iter = 3000, cores = 16,
+                          control = list(adapt_delta = 0.995, max_treedepth=20), 
+                          iter = 5000, cores = 16,
                           prior = trophic_year_prior_disp)
 
 trophic_year_prior_for <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
@@ -47,7 +51,7 @@ trophic_year_prior_for <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
 
 # works
 trophic.for_withyear <- brm(bf_home_range_trophic_withyear, data = traits_phylo, 
-                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 3000, cores = 16,
+                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 5000, cores = 16,
                          prior = trophic_year_prior_for)
 
 
@@ -60,9 +64,8 @@ trophic_year_prior_mig <- prior(normal(0,2),class = 'b', coef = logMass_kg) +
 
 
 trophic.mig_withyear <- brm(bf_migration_trophic_withyear, data = traits_phylo, 
-                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 5000, cores = 16,
+                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 4000, cores = 16,
                          prior = trophic_year_prior_mig)
-
 
 
 ```
@@ -71,7 +74,7 @@ trophic.mig_withyear <- brm(bf_migration_trophic_withyear, data = traits_phylo,
 
 saveRDS(trophic.disp_withyear, "../mods/trophic.disp_withyear.rds")
 saveRDS(trophic.for_withyear, "../mods/trophic.for_withyear.rds")
-saveRDS(trophic.mig_withyear, "../mods/trophic.mig_withyear.rds")
+saveRDS(trophic.mig_withyear, "../mods/trophic.mig_withyear.rds") 
 
 ```
 
