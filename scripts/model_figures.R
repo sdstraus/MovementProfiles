@@ -273,9 +273,9 @@ coef(mod4.1)
 pred_mod_class_multivar <- traits_phylo %>%
   group_by(class) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
-            dispersal_year = seq_range(dispersal_year, by = 1),
-            foraging_year = seq_range(foraging_year, by = 1),
-            migration_year = seq_range(migration_year, by = 1)) %>%
+            dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7),
+            foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7),
+            migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm=TRUE), by = 7)) %>%
   add_epred_draws(class_multivar_withyear)
   # add_predicted_draws(mod4.1)
 
