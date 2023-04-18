@@ -10,6 +10,10 @@ library(ggpubr)
 library(viridis)
 library(ggdist)
 
+#install.packages(c("ggplot2", "tidybayes", "modelr", "brms", "stringr", 
+                   # "dplyr", "ggpubr", "viridis", "ggdist", "knitr"))
+
+library(kableExtra)
 
 ### load traits
 
@@ -17,10 +21,19 @@ library(ggdist)
 # load model
 mod4.1 <- readRDS("mods/class_multivar_withyear.rds")
 
+class_dispersal <- readRDS("mods/class.disp_withyear.rds")
+
 # summary info
-loo(mod4.1)
+loo(class_dispersal)
 summary(mod4.1)
-coef(mod4.1)
+coef(class_dispersal)
+
+
+tidy(coef(class_dispersal)) %>% 
+  filter(grepl(term, pattern = '^b')) %>% 
+  # mutate(term = c('', 'Math', 'Male', 'General', 'Academic')) %>% 
+  rename_all(str_to_title) %>% 
+  kable(digits = 2)
 
 # extract draws
 get_variables(mod4.1)
@@ -67,8 +80,11 @@ mod4.1 %>%
 # posterior means and predictions
 traits_phylo %>%
   group_by(class) %>%
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_epred_draws(mod4.1) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+            dispersal_year = seq_range(dispersal_year, n = 320),
+            foraging_year = seq_range(foraging_year, n = 320),
+            migration_year = seq_range(migration_year, n = 320)) %>%
+  add_epred_draws(class_dispersal) %>%
   head(10)
 
 pred.class <- traits_phylo %>%
@@ -119,7 +135,7 @@ traits_phylo %>%
 ### class ####
 grid <-  traits_phylo %>%
   group_by(class) %>%
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322))
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320))
 
 means <-  grid %>%
   add_epred_draws(mod4.1)

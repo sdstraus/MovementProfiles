@@ -73,7 +73,7 @@ loo(mod1, mod1.new, reloo=TRUE)
 
 
 ####### mod 2 - add mass ########
-bf_dispersal <- bf(dispersal_km ~ log(Mass_kg) ) + Gamma(link = "log")
+bf_dispersal <- bf(dispersal_km ~ log(Mass_kg)) + Gamma(link = "log")
 bf_home_range <- bf(hr.radius ~ log(Mass_kg)) + Gamma(link = "log")
 bf_migration <- bf(Migration_km ~ log(Mass_kg) ) + hurdle_gamma(link = 'log')
 

@@ -119,81 +119,81 @@ mod4.1 %>%
   head(10)
 
 #### creating figs for posterior mean slopes for each condition #######
-#### Media ####
-# foraging
-foraging_media <- readRDS("../mods/mod3/foraging_media.rds")
-
-
-coef_no_summary <- coef(foraging_media, summary = FALSE)
-coef_no_summary$media_foraging %>% dimnames()
-# 1 = iteration, #2 class #3 slopes 
-coef_no_summary$media_foraging[,,] %>% dim()
-apply(coef_no_summary$media_foraging[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
-## posterior distribution
-
-media_foraging_slope <- coef_no_summary$media_foraging[,,2] %>% 
-  as.data.frame() %>% 
-  pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
-  ggplot(aes(x = posterior_samples)) +
-  facet_wrap(~slope, ncol = 1) +
-  geom_histogram(stat = "bin", bins = 100) +
-  geom_vline(xintercept = 0, colour = 'red') +
-  theme_cowplot()+
-  theme(strip.background = element_rect(fill = "white"))+
-  xlab("Posterior mean slope")
-
-# dispersal
-dispersal_media <- readRDS("../mods/mod3/dispersal_media.rds")
-
-
-coef_no_summary <- coef(dispersal_media, summary = FALSE)
-coef_no_summary$media_dispersal %>% dimnames()
-# 1 = iteration, #2 class #3 slopes 
-coef_no_summary$media_dispersal[,,] %>% dim()
-apply(coef_no_summary$media_dispersal[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
-## posterior distribution
-
-media_dispersal_slope <- coef_no_summary$media_dispersal[,,2] %>% 
-  as.data.frame() %>% 
-  pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
-  ggplot(aes(x = posterior_samples)) +
-  facet_wrap(~slope, ncol = 1) +
-  geom_histogram(stat = "bin", bins = 100) +
-  geom_vline(xintercept = 0, colour = 'red') +
-  theme_cowplot()+
-  theme(strip.background = element_rect(fill = "white"))+
-  xlab("Posterior mean slope")
-
-
-# migration
-migration_media <- readRDS("../mods/mod3/migration_media.rds")
-
-
-coef_no_summary <- coef(migration_media, summary = FALSE)
-coef_no_summary$media_migration %>% dimnames()
-# 1 = iteration, #2 class #3 slopes 
-coef_no_summary$media_migration[,,] %>% dim()
-apply(coef_no_summary$media_migration[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
-## posterior distribution
-
-media_migration_slope <- coef_no_summary$media_migration[,,2] %>% 
-  as.data.frame() %>% 
-  pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
-  ggplot(aes(x = posterior_samples)) +
-  facet_wrap(~slope, ncol = 1) +
-  geom_histogram(stat = "bin", bins = 100) +
-  geom_vline(xintercept = 0, colour = 'red') +
-  theme_cowplot()+
-  theme(strip.background = element_rect(fill = "white"))+
-  xlab("Posterior mean slope")
-
-media_post_mean_slopes <- ggarrange(media_foraging_slope, media_dispersal_slope, media_migration_slope, 
-                                    labels = c("Foraging", "Dispersal", "Migration"),
-                                    nrow = 1)
-
-jpeg(filename = "../figures/media_posterior_means_slopes.jpeg", width = 9, height = 6, units = 'in', res = 1000)
-media_post_mean_slopes
-dev.off()
+# #### Media ####
+# # foraging
+# foraging_media <- readRDS("../mods/mod3/foraging_media.rds")
+# 
+# 
+# coef_no_summary <- coef(foraging_media, summary = FALSE)
+# coef_no_summary$media_foraging %>% dimnames()
+# # 1 = iteration, #2 class #3 slopes 
+# coef_no_summary$media_foraging[,,] %>% dim()
+# apply(coef_no_summary$media_foraging[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
+# ## posterior distribution
+# 
+# media_foraging_slope <- coef_no_summary$media_foraging[,,2] %>% 
+#   as.data.frame() %>% 
+#   pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
+#   ggplot(aes(x = posterior_samples)) +
+#   facet_wrap(~slope, ncol = 1) +
+#   geom_histogram(stat = "bin", bins = 100) +
+#   geom_vline(xintercept = 0, colour = 'red') +
+#   theme_cowplot()+
+#   theme(strip.background = element_rect(fill = "white"))+
+#   xlab("Posterior mean slope")
+# 
+# # dispersal
+# dispersal_media <- readRDS("../mods/mod3/dispersal_media.rds")
+# 
+# 
+# coef_no_summary <- coef(dispersal_media, summary = FALSE)
+# coef_no_summary$media_dispersal %>% dimnames()
+# # 1 = iteration, #2 class #3 slopes 
+# coef_no_summary$media_dispersal[,,] %>% dim()
+# apply(coef_no_summary$media_dispersal[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
+# ## posterior distribution
+# 
+# media_dispersal_slope <- coef_no_summary$media_dispersal[,,2] %>% 
+#   as.data.frame() %>% 
+#   pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
+#   ggplot(aes(x = posterior_samples)) +
+#   facet_wrap(~slope, ncol = 1) +
+#   geom_histogram(stat = "bin", bins = 100) +
+#   geom_vline(xintercept = 0, colour = 'red') +
+#   theme_cowplot()+
+#   theme(strip.background = element_rect(fill = "white"))+
+#   xlab("Posterior mean slope")
+# 
+# 
+# # migration
+# migration_media <- readRDS("../mods/mod3/migration_media.rds")
+# 
+# 
+# coef_no_summary <- coef(migration_media, summary = FALSE)
+# coef_no_summary$media_migration %>% dimnames()
+# # 1 = iteration, #2 class #3 slopes 
+# coef_no_summary$media_migration[,,] %>% dim()
+# apply(coef_no_summary$media_migration[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
+# ## posterior distribution
+# 
+# media_migration_slope <- coef_no_summary$media_migration[,,2] %>% 
+#   as.data.frame() %>% 
+#   pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
+#   ggplot(aes(x = posterior_samples)) +
+#   facet_wrap(~slope, ncol = 1) +
+#   geom_histogram(stat = "bin", bins = 100) +
+#   geom_vline(xintercept = 0, colour = 'red') +
+#   theme_cowplot()+
+#   theme(strip.background = element_rect(fill = "white"))+
+#   xlab("Posterior mean slope")
+# 
+# media_post_mean_slopes <- ggarrange(media_foraging_slope, media_dispersal_slope, media_migration_slope, 
+#                                     labels = c("Foraging", "Dispersal", "Migration"),
+#                                     nrow = 1)
+# 
+# jpeg(filename = "../figures/media_posterior_means_slopes.jpeg", width = 9, height = 6, units = 'in', res = 1000)
+# media_post_mean_slopes
+# dev.off()
 
 
 #### Class ####

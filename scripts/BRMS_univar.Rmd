@@ -23,6 +23,23 @@ traits_phylo <- traits_phylo[-which(traits_phylo$scientific_name.x=='Tragelaphus
 
 ```
 
+Null Model
+```{r}
+bf_dispersal_null <- bf(dispersal_km ~ log(Mass_kg) + dispersal_year) + 
+  lognormal(link = "identity")
+bf_home_range_null <- bf(hr.radius ~ log(Mass_kg) + foraging_year) + 
+  lognormal(link = "identity")
+bf_migration_null <- bf(Migration_km ~ log(Mass_kg) + migration_year) +
+  hurdle_lognormal(link = "identity")
+
+
+null_multivar <- brm(bf_dispersal_null + bf_home_range_null + bf_migration_null, 
+                     data = traits_phylo, cores = 4, iter = 3000)
+
+saveRDS(null_multivar, "../mods/null_multivar.rds")
+```
+
+
 Trophic guild, random slope and intercept, include year
 
 ```{r guild-univariate-year}

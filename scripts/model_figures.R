@@ -10,65 +10,65 @@ library(ggpubr)
 library(viridis)
 
 setwd("/Users/samstraus/github/SUPSmods/")
+# 
+# ######## mod 1 - NULL ########
+# mod1 <- readRDS("mods/mod1/mod1.rds")
+# summary(mod1)
+# 
+# pred_mod1 <- traits_phylo %>%
+#   group_by(class) %>%
+#   data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
+#   add_predicted_draws(mod1)
+# 
+# mod1_hr <- ggplot() +
+#   geom_point(data = traits_phylo, aes(x = Mass_kg, y = hr.radius, color = ordered(class))) +
+#   stat_lineribbon(data = pred_mod1[pred_mod1$.category=='hrradius',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
+#   scale_color_brewer(palette = 'Dark2')+
+#   scale_x_log10()+
+#   scale_y_log10()+
+#   cowplot::theme_cowplot()
+# 
+# mod1_disp <- ggplot() +
+#   geom_point(data = traits_phylo, aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
+#   stat_lineribbon(data = pred_mod1[pred_mod1$.category=='dispersalkm',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
+#   scale_color_brewer(palette = 'Dark2')+
+#   scale_x_log10()+
+#   scale_y_log10()+
+#   cowplot::theme_cowplot()
+# 
+# 
+# pred1_disp <- pred_mod1[pred_mod1$.category=='dispersalkm',]
+# 
+# mod1_disp <- ggplot()+
+#   geom_point(data = traits_phylo, aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
+#   stat_lineribbon(data =pred4.1_disp, 
+#                   aes(y = .prediction, x = Mass_kg, color = ordered(class), fill = ordered(class)), 
+#                   .width = c(.5), alpha = 0.3) +
+#   # geom_line(data = pred4.1_disp, aes(y=.prediction, x=Mass_kg))+
+#   scale_color_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
+#                                 "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", "Reptilia" = "#FDE725FF"), 
+#                      name ="Class")+  
+#   scale_x_log10()+
+#   scale_y_log10()+
+#   cowplot::theme_cowplot()+
+#   xlab("Body mass (kg)")+
+#   ylab("Dispersal distance (km)")
+# 
+# mod1_mig <- ggplot() +
+#   geom_point(data = traits_phylo, aes(x = Mass_kg, y = Migration_km, color = ordered(class))) +
+#   stat_lineribbon(data = pred_mod1[pred_mod1$.category=='Migrationkm',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
+#   scale_color_brewer(palette = 'Dark2')+
+#   scale_x_log10()+
+#   scale_y_log10()+
+#   cowplot::theme_cowplot()
+# 
+# mod1_figs <- ggarrange(mod1_hr, mod1_disp, mod1_mig)
+# ggsave(mod1_figs, filename = "mod1_figs.jpg", dpi = 'retina', width = 10, height = 6, units = 'in')
 
-######## mod 1 - NULL ########
-mod1 <- readRDS("mods/mod1/mod1.rds")
-summary(mod1)
-
-pred_mod1 <- traits_phylo %>%
-  group_by(class) %>%
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_predicted_draws(mod1)
-
-mod1_hr <- ggplot() +
-  geom_point(data = traits_phylo, aes(x = Mass_kg, y = hr.radius, color = ordered(class))) +
-  stat_lineribbon(data = pred_mod1[pred_mod1$.category=='hrradius',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
-  scale_color_brewer(palette = 'Dark2')+
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()
-
-mod1_disp <- ggplot() +
-  geom_point(data = traits_phylo, aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
-  stat_lineribbon(data = pred_mod1[pred_mod1$.category=='dispersalkm',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
-  scale_color_brewer(palette = 'Dark2')+
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()
-
-
-pred1_disp <- pred_mod1[pred_mod1$.category=='dispersalkm',]
-
-mod1_disp <- ggplot()+
-  geom_point(data = traits_phylo, aes(x = Mass_kg, y = dispersal_km, color = ordered(class))) +
-  stat_lineribbon(data =pred4.1_disp, 
-                  aes(y = .prediction, x = Mass_kg, color = ordered(class), fill = ordered(class)), 
-                  .width = c(.5), alpha = 0.3) +
-  # geom_line(data = pred4.1_disp, aes(y=.prediction, x=Mass_kg))+
-  scale_color_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
-                                "Chondrichthyes" = "#21908CFF", "Mammalia" = "#5DC863FF", "Reptilia" = "#FDE725FF"), 
-                     name ="Class")+  
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()+
-  xlab("Body mass (kg)")+
-  ylab("Dispersal distance (km)")
-
-mod1_mig <- ggplot() +
-  geom_point(data = traits_phylo, aes(x = Mass_kg, y = Migration_km, color = ordered(class))) +
-  stat_lineribbon(data = pred_mod1[pred_mod1$.category=='Migrationkm',], aes(y = .prediction, x = Mass_kg, color = ordered(class)), .width = c(.99, .95, .8, .5), alpha = 0.25) +
-  scale_color_brewer(palette = 'Dark2')+
-  scale_x_log10()+
-  scale_y_log10()+
-  cowplot::theme_cowplot()
-
-mod1_figs <- ggarrange(mod1_hr, mod1_disp, mod1_mig)
-ggsave(mod1_figs, filename = "mod1_figs.jpg", dpi = 'retina', width = 10, height = 6, units = 'in')
-
-############ mod 2 #############
-mod2 <- readRDS("../mods/mod2/mod2.rds")
-summary(mod2)
-
+############ NULL #############
+null_multivar <- readRDS("mods/null_multivar.rds")
+summary(null_multivar)
+fixef(null_multivar)
 # traits_phylo %>%
 #   group_by(class) %>% 
 #   data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
@@ -82,10 +82,10 @@ summary(mod2)
 #   scale_y_log10()+
 #   cowplot::theme_cowplot()
 
-pred_mod2 <- traits_phylo %>%
+pred_null_mulitvar <- traits_phylo %>%
   group_by(class) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_predicted_draws(mod2)
+  add_predicted_draws(null_multivar)
 
 mod2_hr <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = hr.radius, color = ordered(class))) +
@@ -260,7 +260,7 @@ dev.off()
 
 
 ########### mod 4 - class ###############
-mod4.1 <- readRDS("../mods/mod4.1/mod4_1.rds")
+class_multivar_withyear <- readRDS("mods/class_multivar_withyear.rds")
 # mod4.2 <- readRDS("../mods/mod4.2/mod4.2.rds")
 # mod4.1.2 <- readRDS("../mods/mod4.1/mod4_1.2.rds")
 # mod4.3.2 <- readRDS("../mods/mod4.1/mod4_3.2.rds")
@@ -270,10 +270,13 @@ coef(mod4.1)
 
 
 
-pred_mod4.1 <- traits_phylo %>%
+pred_mod_class_multivar <- traits_phylo %>%
   group_by(class) %>%
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 322)) %>%
-  add_epred_draws(mod4.1)
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+            dispersal_year = seq_range(dispersal_year, by = 1),
+            foraging_year = seq_range(foraging_year, by = 1),
+            migration_year = seq_range(migration_year, by = 1)) %>%
+  add_epred_draws(class_multivar_withyear)
   # add_predicted_draws(mod4.1)
 
 #pred_mod4.1 <- filter(traits_phylo, class != "Aves" & class != "Mammalia") %>%
