@@ -22,9 +22,33 @@ levels(traits_phylo$diet_broadest_cat)
 traits_phylo <- traits_phylo[-which(traits_phylo$scientific_name.x=='Tragelaphus_oryx'),]
 
 ```
+Null models, univariate, with year
 
-Null Model
-```{r}
+```{r Null-univariate-withyear}
+bf_dispersal_null_withyear <- bf(dispersal_km ~ log(Mass_kg) + dispersal_year) + lognormal(link = "identity")
+bf_home_range_null_withyear <- bf(hr.radius ~ log(Mass_kg) + foraging_year) + lognormal(link = "identity")
+bf_migration_null_withyear <- bf(Migration_km ~ log(Mass_kg) + migration_year) + hurdle_lognormal(link = 'identity')
+
+
+null.disp_withyear <- brm(bf_dispersal_null_withyear, data = traits_phylo, iter = 3000)
+null.for_withyear <- brm(bf_home_range_null_withyear, data = traits_phylo, iter = 3000)
+null.mig_withyear <- brm(bf_migration_null_withyear, data = traits_phylo, iter = 3000)
+
+```
+
+
+save univariate null mods
+```{r save-uni-nulls}
+saveRDS(null.disp_withyear, "../mods/null.disp_withyear.rds")
+saveRDS(null.for_withyear, "../mods/null.for_withyear.rds")
+saveRDS(null.mig_withyear, "../mods/null.mig_withyear.rds") 
+
+```
++/-
+
+
+Null Model, multivariate, with year
+```{r Null multivar with year}
 bf_dispersal_null <- bf(dispersal_km ~ log(Mass_kg) + dispersal_year) + 
   lognormal(link = "identity")
 bf_home_range_null <- bf(hr.radius ~ log(Mass_kg) + foraging_year) + 

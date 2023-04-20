@@ -261,6 +261,11 @@ dev.off()
 
 ########### mod 4 - class ###############
 class_multivar_withyear <- readRDS("mods/class_multivar_withyear.rds")
+class_dispersal <- readRDS("mods/class.disp_withyear.rds")
+class_foraging <- readRDS("mods/class.for_withyear.rds")
+class_migration <- readRDS("mods/class.mig_withyear.rds")
+
+
 # mod4.2 <- readRDS("../mods/mod4.2/mod4.2.rds")
 # mod4.1.2 <- readRDS("../mods/mod4.1/mod4_1.2.rds")
 # mod4.3.2 <- readRDS("../mods/mod4.1/mod4_3.2.rds")
@@ -270,14 +275,23 @@ coef(mod4.1)
 
 
 
-pred_mod_class_multivar <- traits_phylo %>%
+pred_mod_class_dispersal <- traits_phylo %>%
   group_by(class) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
-            dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7),
-            foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7),
-            migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm=TRUE), by = 7)) %>%
-  add_epred_draws(class_multivar_withyear)
-  # add_predicted_draws(mod4.1)
+            dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7)) %>% 
+  add_epred_draws(class_dispersal)
+
+pred_mod_class_foraging <- traits_phylo %>%
+  group_by(class) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+            foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7)) %>% 
+  add_epred_draws(class_foraging)
+
+pred_mod_class_migration <- traits_phylo %>%
+  group_by(class) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+            migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm=TRUE), by = 7)) %>% 
+  add_epred_draws(class_migration)
 
 #pred_mod4.1 <- filter(traits_phylo, class != "Aves" & class != "Mammalia") %>%
 # mammals 117
@@ -297,9 +311,9 @@ scales::show_col(viridis_pal()(5))
 # pred_mod4.1 <- pred_mod4.1 %>% 
 #   mutate(epred.log10 = log10(.epred))
 
-class_foraging <- ggplot() +
+class_foraging_plot <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = log10(hr.radius), color = ordered(class))) +
-  stat_lineribbon(data = pred_mod4.1[pred_mod4.1$.category=='hrradius',], 
+  stat_lineribbon(data = pred_mod_class_foraging, 
                   aes(y = log10(.epred), x = Mass_kg, color = ordered(class), fill = ordered(class)), 
                   .width = c(.95), alpha = 0.4) +
   scale_color_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
@@ -320,9 +334,9 @@ class_foraging <- ggplot() +
 pred4.1_disp <- pred_mod4.1[pred_mod4.1$.category=='dispersalkm',]
 #pred4.1_summ <- point_interval(pred4.1_disp, .width = c(0.95, 0.8, 0.5, 0.25))
 
-class_dispersal <- ggplot()+
+class_dispersal_plot <- ggplot()+
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = log10(dispersal_km), color = ordered(class))) +
-  stat_lineribbon(data =pred4.1_disp,
+  stat_lineribbon(data =pred_mod_class_multivar,
                   aes(y = log10(.epred), x = Mass_kg,
                       color = ordered(class), fill = ordered(class)),
                   .width = 0.95, alpha = 0.4)+
@@ -344,9 +358,9 @@ class_dispersal <- ggplot()+
 #ggsave(class_disp, filename = "../figures/mod4.1_disp.jpg", dpi = 'retina', width = 4, height = 4, units = 'in')
 
 
-class_migration <- ggplot() +
+class_migration_plot <- ggplot() +
   geom_point(data = traits_phylo, aes(x = Mass_kg, y = log10(Migration_km), color = ordered(class))) +
-  stat_lineribbon(data = pred_mod4.1[(pred_mod4.1$.category=='Migrationkm')&(pred_mod4.1$.epred>0),], 
+  stat_lineribbon(data = pred_mod_class_migration, 
                   aes(y = log10(.epred), x = Mass_kg, color = ordered(class),fill =ordered(class)), 
                   .width = c(.95), alpha = 0.4) +
   scale_color_manual(values = c("Amphibia" = "#440154FF","Aves" = "#3B528BFF", 
@@ -378,13 +392,13 @@ class_migration <- ggplot() +
 other_figs <- ggarrange(mam_hr, mam_disp, mam_mig, nrow=1, common.legend = TRUE, legend = "right")
 Mega_fig <- ggarrange(aves_figs, mam_figs, other_figs, nrow=3)
 
-class_figs <- ggarrange(class_foraging, class_dispersal, class_migration, nrow=1, 
-                        common.legend = TRUE, legend = "right", labels = c("d", "e", "f"))
+class_figs <- ggarrange(class_foraging_plot, class_dispersal_plot, class_migration_plot, nrow=1, 
+                        common.legend = TRUE, legend = "right", labels = c("a", "b", "c"))
 
-ggsave(class_figs, filename = "../figures/class_fig_epreds.jpg", dpi = 'retina', width = 10, height = 3, units = 'in')
+#ggsave(class_figs, filename = "../figures/class_fig_epreds.jpg", dpi = 'retina', width = 10, height = 3, units = 'in')
 
 
-jpeg(filename = "../figures/class_figs_epreds.jpeg", width = 12, height = 3, units = 'in', res = 1000)
+jpeg(filename = "figures/class_figs_epreds_Apr2023.jpeg", width = 12, height = 3, units = 'in', res = 1000)
 class_figs
 dev.off()
 
@@ -664,9 +678,14 @@ dev.off()
 
 
 ######## mod 5 - diet ##########
-mod5 <- readRDS("../mods/mod5_2.rds")
-summary(mod5)
-coef(mod5)
+# mod5 <- readRDS("../mods/mod5_2.rds")
+# summary(mod5)
+# coef(mod5)
+
+
+trophic_foraging <- readRDS("mods/trophic.for_withyear.rds")
+trophic_dispersal <- readRDS("mods/trophic.disp_withyear.rds")
+trophic_migration <- readRDS("mods/trophic.mig_withyear.rds")
 
 pred_mod5 <- traits_phylo %>%
   group_by(diet_broadest_cat) %>%
