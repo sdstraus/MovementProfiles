@@ -1,0 +1,198 @@
+---
+title: "00_Preprocessing"
+author: "Sam Straus and Melissa Guzman"
+date: "2023-04-21"
+output: html_document
+---
+
+``` {r pull taxonomic classes, include = FALSE}
+source("class_for_sp.R", local = knitr::knit_global())
+
+```
+
+```{r cleaning columns, include=FALSE}
+#source("code/multiplot.R")
+traits_clean <- read.csv("/Users/sam/github/SUPSmods/data/cleaned_traits.csv", fileEncoding="latin1")
+# 
+# ## load phylogeny
+#
+one_phylo <- readRDS("/Users/sam/github/SUPSmods/data/final_phylo.rds")
+
+#one_phylo
+
+all_class <- read.csv("/Users/sam/github/SUPSmods/data/classes.csv")
+
+traits <- traits_clean %>% 
+  dplyr::filter(number_traits_completed ==4) %>% 
+  left_join(all_class, by = c("scientific_name.x" = "scientific_name")) %>% 
+  filter(!(class %in% "Insecta")) %>% 
+  #bind_rows(shark_1) %>% 
+  dplyr::filter(str_replace(scientific_name.x, " ", "_") %in% one_phylo$tip.label) %>% 
+  select(scientific_name.x, dispersal_km, Migration_km, mean.hra.m2, Mass_kg, 
+         class, order, diet_broadest_cat, media_simplified, media_dispersal, 
+         media_migration, media_foraging, source_dispersal, Migration_source, source_hra) %>% 
+  mutate(scientific_name.x = str_replace(scientific_name.x, " ", "_")) %>% 
+  mutate(dispersal_km = dispersal_km + 0.0001) %>% 
+  mutate(mean.hra.m2 = as.numeric(as.character(mean.hra.m2))) %>% 
+  mutate(hr.radius = sqrt((mean.hra.m2/1000000)/pi)) %>% 
+  mutate(Migration_km = as.numeric(as.character(Migration_km))) %>% 
+  mutate(media_simplified = as.factor(as.character(media_simplified))) %>% 
+  mutate(media_foraging = as.factor(media_foraging)) %>% 
+  mutate(media_dispersal = as.factor(media_dispersal)) %>% 
+  mutate(media_migration = as.factor(media_migration)) %>% 
+  mutate(media_foraging = as.factor(media_foraging)) %>% 
+  mutate(Migration_source = as.factor(Migration_source)) %>% 
+  mutate(source_hra = as.factor(source_hra))
+
+
+traits$class <- as.character(traits$class)
+
+which(is.na(traits$class)) #1, 	Scapanus_townsendii
+traits$class[1] <- "Mammalia" 
+traits$order[1] <- "Eulipotyphla" 
+
+rows <- which(traits$class == "Lepidosauria") # this is a subclass
+traits$class[rows] <- "Reptilia"
+
+
+# make sure trophic guild is a factor
+traits$diet_broadest_cat <- as.factor(traits$diet_broadest_cat)
+traits$diet_broadest_cat <- droplevels(traits$diet_broadest_cat)
+levels(traits$diet_broadest_cat)
+
+## remove eland because source is missing!
+traits <- traits[-which(traits$scientific_name.x=='Tragelaphus_oryx'),]
+
+```
+
+
+```{r ID databases, include = FALSE}
+# Find which studies have more than one entry, those are more likely to be the databases
+dispersal_source_count <- traits %>% 
+  group_by(source_dispersal) %>% 
+  summarize(count = n())
+
+migration_source_count <- traits %>% 
+  group_by(Migration_source) %>% 
+  summarize(count = n())
+
+foraging_source_count <- traits %>% 
+  group_by(source_hra) %>% 
+  summarize(count = n())
+
+## studies with more than one dispersal distance that we don't need to pull individual years from:
+# Jenkins 2017
+## Paradis 1998 also large dataset (Patterns of natal and breeding dispersal in birds)
+# maybe better to use than Prugh??
+## Prugh (https://doi.org/10.1073/pnas.0806080105) and Jenkins don't list data source
+
+# differences between solo papers and db papers
+# distance by year (and body size)
+# spp with 1 or 2 movement types
+
+# identify which dispersal sources are single papers or dbs
+dispersal_single <- dispersal_source_count$source_dispersal[which(dispersal_source_count$count == 1)]
+dispersal_db <- dispersal_source_count$source_dispersal[which(dispersal_source_count$count != 1)]
+
+traits$dispersal_source_type <- ""
+
+traits$dispersal_source_type[which(traits$source_dispersal %in% dispersal_single == TRUE)] <- "single"
+traits$dispersal_source_type[which(traits$source_dispersal %in% dispersal_db == TRUE)] <- "db"
+
+# repeat for foraging
+foraging_single <- foraging_source_count$source_hra[which(foraging_source_count$count == 1)]
+foraging_db <- foraging_source_count$source_hra[which(foraging_source_count$count != 1)]
+
+traits$foraging_source_type <- ""
+
+traits$foraging_source_type[which(traits$source_hra %in% foraging_single == TRUE)] <- "single"
+traits$foraging_source_type[which(traits$source_hra %in% foraging_db == TRUE)] <- "db"
+
+
+# repeat for migration
+migration_single <- migration_source_count$Migration_source[which(migration_source_count$count == 1)]
+migration_db <- migration_source_count$Migration_source[which(migration_source_count$count != 1)]
+
+traits$migration_source_type <- ""
+
+traits$migration_source_type[which(traits$Migration_source %in% migration_single == TRUE)] <- "single"
+traits$migration_source_type[which(traits$Migration_source %in% migration_db == TRUE)] <- "db"
+
+
+```
+
+
+```{r pull pub year, include = FALSE}
+## pull out year from source
+# author and year separated by _
+# year always comes last
+
+head(traits$source_dispersal)
+#stringr::str_split(traits$source_dispersal, "_")
+# last_element <- my_list[length(my_list)]
+library(stringr)
+
+traits$dispersal_year <- 0 #initialize as numeric
+traits$foraging_year <- 0
+traits$migration_year <- 0
+
+
+for(i in 1:length(traits$source_dispersal)){
+  temp_string1 <- str_split(traits$source_dispersal[i], "_")
+  traits$dispersal_year[i] <- temp_string1[[1]][length(temp_string1[[1]])]
+  
+  temp_string2 <- str_split(traits$source_hra[i], "_")
+  traits$foraging_year[i] <- temp_string2[[1]][length(temp_string2[[1]])]
+  
+  temp_string3 <- str_split(traits$Migration_source[i], "_")
+  traits$migration_year[i] <- temp_string3[[1]][length(temp_string3[[1]])]
+  
+}
+
+# some quick manual fixes
+# dispersal is fine
+unlist(traits$dispersal_year)
+
+
+# foraging
+unlist(traits$foraging_year)
+traits$foraging_year[which(traits$foraging_year== "Penzhorn 1982")] <- 1982
+traits$foraging_year[which(traits$foraging_year == 
+                             "Global Invasive Species Database")] <- "GISD"
+
+traits$foraging_year[which(traits$source_hra == "Pantheria")] <- 2008 #also this is a db even though we only have 1 entry
+traits$foraging_source_type[which(traits$source_hra == "Pantheria")] <- "db" 
+
+# migration needs more work
+unlist(traits$migration_year)
+
+# rows i can pull the publishing year from
+traits$migration_year[which(traits$migration_year == "Lazenby-Cohen and Cockburn 1991")] <- 1991
+traits$migration_year[which(traits$migration_year == "Szep et al. 2017")] <- 2017
+traits$migration_year[which(traits$migration_year == "Cornell Birds of North America")] <- 2004 # publishing year of book
+traits$migration_year[which(traits$migration_year == "http://www.sibr.com/mammals/M154.html")] <- 1999
+
+# rows I can't
+traits$migration_year[which(traits$migration_year == "AWD")] <- "ADW"
+traits$migration_year[which(traits$migration_year == "Montana field guide")] <- "mt.gov"
+traits$migration_year[which(traits$migration_year == "Montana FWP")] <- "mt.gov"
+traits$migration_year[which(traits$migration_year == "http://birds.kz/v2taxon.php?l=en&s=85 + google earth")] <- "KZ Birds"
+
+# make sure that these source types are correct based on edits above
+traits$migration_source_type[which(traits$Migration_source == "Avibase")] <- "db" 
+traits$migration_source_type[which(traits$migration_year == "mt.gov")] <- "db" 
+traits$migration_source_type[which(traits$migration_year == "IUCN")] <- "db" 
+traits$migration_source_type[which(traits$migration_year == "ADW")] <- "db" 
+
+# tidy up
+traits_num <- traits %>% 
+  mutate(dispersal_year = as.numeric(dispersal_year)) %>% 
+  mutate(foraging_year = as.numeric(migration_year)) %>% 
+  mutate(migration_year = as.numeric(migration_year))
+
+```
+
+```{r write files}
+write.csv(traits, "/Users/sam/github/SUPSmods/3D-app/3Dplot/Traits_final.csv")
+write.csv(traits_num, "../data/Traits_final_cleaned.csv")
+```

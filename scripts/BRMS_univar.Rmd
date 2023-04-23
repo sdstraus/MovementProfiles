@@ -14,13 +14,6 @@ library(rstan)
 ### load traits
 traits_phylo <- read.csv("../data/Traits_final_cleaned.csv", fileEncoding="latin1")
 
-traits_phylo$diet_broadest_cat <- as.factor(traits_phylo$diet_broadest_cat)
-traits_phylo$diet_broadest_cat <- droplevels(traits_phylo$diet_broadest_cat)
-levels(traits_phylo$diet_broadest_cat)
-
-## remove eland because source is missing!
-traits_phylo <- traits_phylo[-which(traits_phylo$scientific_name.x=='Tragelaphus_oryx'),]
-
 ```
 Null models, univariate, with year
 

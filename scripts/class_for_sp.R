@@ -1,14 +1,10 @@
-library(googlesheets)
 library(dplyr)
 library(stringr)
 library(taxize)
 library(purrr)
 
-MA_sheet<-gs_title(x = "SUPs_traits")
 
-traits_clean <- gs_read(ss = MA_sheet, ws=5) 
-
-traits_clean <- read.csv("data/SUPs_traits - clean_traits.csv")
+traits_clean <- read.csv("/Users/sam/github/SUPSmods/data/cleaned_traits.csv", fileEncoding="latin1")
 
 sci_names <- traits_clean %>% 
   filter(number_traits_completed %in% c(3,4)) %>% 
@@ -18,7 +14,7 @@ taxon_sps_class <- list()
 
 for(i in 2:length(sci_names)){
   
-  if(i %in% seq(2,length(sci_names), 2)) Sys.sleep(2)
+  if(i %in% seq(2,length(sci_names), 2)) Sys.sleep(10)
   
   class_sp <- tax_name(query = sci_names[i], get = "class", db = "ncbi")
   
@@ -28,7 +24,7 @@ for(i in 2:length(sci_names)){
 taxon_sps_order <- list()
 for(i in 2:length(sci_names)){
   
-  if(i %in% seq(2,length(sci_names), 2)) Sys.sleep(2)
+  if(i %in% seq(2,length(sci_names), 2)) Sys.sleep(5)
   
   order_sp <- tax_name(query = sci_names[i], get = "order", db = "ncbi")
   

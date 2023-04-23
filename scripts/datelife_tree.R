@@ -10,13 +10,9 @@ all_taxa <- read.csv("data/classes.csv")
 
 #### search names and do 1 tree with all taxa using the median method
 
-###
 
-MA_sheet<-gs_title(x = "SUPs_traits")
+traits_clean <- read.csv("/Users/sam/github/SUPSmods/data/cleaned_traits.csv", fileEncoding="latin1")
 
-traits_clean <- gs_read(ss = MA_sheet, ws=5) 
-
-traits_clean <- read.csv("data/SUPs_traits - clean_traits.csv")
 
 fish <- traits_clean %>% 
   filter(number_traits_completed %in% c(3)) %>%

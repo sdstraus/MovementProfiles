@@ -14,7 +14,7 @@ library(ggdist)
                    # "dplyr", "ggpubr", "viridis", "ggdist", "knitr"))
 
 library(kableExtra)
-
+traits_phylo <- read.csv("data/Traits_final_cleaned.csv", fileEncoding="latin1")
 ### load traits
 
 
