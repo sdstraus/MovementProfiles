@@ -7,6 +7,7 @@ output: html_document
 
 ``` {r pull taxonomic classes, include = FALSE}
 source("class_for_sp.R", local = knitr::knit_global())
+source("datelife_tree.R", local = knitr::knit_global())
 
 ```
 

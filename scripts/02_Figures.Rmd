@@ -1,0 +1,460 @@
+---
+title: "02_Figures"
+author: "Sam Straus and Melissa Guzman"
+date: "2023-05-01"
+output: html_document
+---
+
+Read in data file that was created in the `00_Preprocessing.Rmd` script
+
+```{r load packages and data, include=FALSE}
+
+library(tidyverse)
+library(cowplot)
+library(ggplot2)
+library(scales)
+library(gridExtra)
+library(ggpubr)
+library(dplyr)
+library(tidyr)
+library(PNWColors)
+library(gtable)
+library(grid)
+library(gridExtra)
+
+# for plotting fig 4
+library(vegan) ## for PCA
+#library(devtools)
+#install_github("vqv/ggbiplot")
+library(ggbiplot) ## for PCA
+
+# for plotting fig 5
+library(tidybayes)
+library(modelr)
+library(brms)
+library(stringr)
+
+traits <- read.csv("../data/Traits_final_cleaned.csv", fileEncoding="latin1")
+
+```
+
+
+The code below is used to create Figure 2, which shows the distribution of the data for each movement type and hypothesis.
+```{r Figure 2 - data distributions}
+
+# Figure 2 top row: group by taxonomic class
+
+class_cols <- c(Amphibia = "#4f412b", Aves = "#865a3c", Chondrichthyes = "#ba783e", 
+                Mammalia = "#e69c4c", Reptilia = "#fbcc74")
+
+class_for_distr <- ggplot(traits, aes(x = class, y = hr.radius)) + 
+  geom_violin(aes(color = class, fill = class))  + 
+  geom_boxplot(width = 0.2)+
+  scale_color_manual(values = class_cols, name = "Class")+
+  scale_fill_manual(values = class_cols, name = "Class") +
+  scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
+  theme(legend.position = "none")+
+  cowplot::theme_cowplot()+
+  ylab("Foraging radius (km)")+
+  xlab("Class")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  theme(legend.position = "none")
+
+
+class_disp_distr <- ggplot(traits, aes(x = class, y = dispersal_km)) + 
+  geom_violin(aes(color = class, fill = class))  + 
+  geom_boxplot(width = 0.2)+
+  scale_color_manual(values = class_cols, name = "Class")+
+  scale_fill_manual(values = class_cols, name = "Class") +
+  scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
+  theme(legend.position = "none")+
+  cowplot::theme_cowplot()+
+  ylab("Dispersal distance (km)")+
+  xlab("Class")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  theme(legend.position = "none")
+
+class_mig_distr <- ggplot(traits, aes(x = class, y = (Migration_km + 1))) + 
+  geom_violin(aes(color = class, fill = class))  + 
+  geom_boxplot(width = 0.2)+
+  scale_color_manual(values = class_cols, name = "Class")+
+  scale_fill_manual(values = class_cols, name = "Class") +
+  scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
+  theme(legend.position = "none")+
+  cowplot::theme_cowplot()+
+  ylab("Migration distance (km + 1)")+
+  xlab("Class")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  theme(legend.position = "none")
+
+distr_by_class <- ggarrange(class_for_distr, class_disp_distr, class_mig_distr, nrow = 1, 
+                           labels = c("a", "b", "c"))
+
+
+# Figure 2 bottom panel, group by trophic guild
+# [1,] "#362904" "#54450f" "#45681e" "#4a9152" "#64a8a8" "#85b6ce" "#cde5f9" "#eef3ff"
+
+diet_cols <- c(Carnivore = "#45681e", Herbivore = "#4a9152", 
+                Invertivore = "#64a8a8", Omnivore = "#cde5f9")
+
+trophic_for_distr <-  traits %>% 
+  filter(diet_broadest_cat != "") %>%
+  ggplot(aes(x = diet_broadest_cat, y = hr.radius)) +
+  geom_violin(aes(color = diet_broadest_cat, fill = diet_broadest_cat))  + 
+  geom_boxplot(width = 0.2)+
+  scale_color_manual(values = diet_cols, name = "Trophic Guild")+
+  scale_fill_manual(values = diet_cols, name = "Trophic Guild") +
+  scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
+  theme(legend.position = "none")+
+  cowplot::theme_cowplot()+
+  ylab("Foraging radius (km)")+
+  xlab("Trophic Guild")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  theme(legend.position = "none")
+
+trophic_disp_distr <-  traits %>% 
+  filter(diet_broadest_cat != "") %>%
+  ggplot(aes(x = diet_broadest_cat, y = dispersal_km)) +
+  geom_violin(aes(color = diet_broadest_cat, fill = diet_broadest_cat))  + 
+  geom_boxplot(width = 0.2)+
+  scale_color_manual(values = diet_cols, name = "Trophic Guild")+
+  scale_fill_manual(values = diet_cols, name = "Trophic Guild") +
+  scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
+  theme(legend.position = "none")+
+  cowplot::theme_cowplot()+
+  ylab("Dispersal distance (km)")+
+  xlab("Trophic Guild")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  theme(legend.position = "none")
+
+
+trophic_mig_distr <-  traits %>% 
+  filter(diet_broadest_cat != "") %>%
+  ggplot(aes(x = diet_broadest_cat, y = (Migration_km + 1))) +
+  geom_violin(aes(color = diet_broadest_cat, fill = diet_broadest_cat))  + 
+  geom_boxplot(width = 0.2)+
+  scale_color_manual(values = diet_cols, name = "Trophic Guild")+
+  scale_fill_manual(values = diet_cols, name = "Trophic Guild") +
+  scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
+  theme(legend.position = "none")+
+  cowplot::theme_cowplot()+
+  ylab("Migration distance (km + 1)")+
+  xlab("Trophic Guild")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  theme(legend.position = "none")
+
+##  make the widths all the same
+# Get the gtables
+gA <- ggplotGrob(class_for_distr)
+gB <- ggplotGrob(trophic_for_distr)
+gC <- ggplotGrob(trophic_disp_distr)
+gD <- ggplotGrob(trophic_mig_distr)
+
+gB$widths <- gA$widths
+gC$widths <- gA$width
+gD$widths <- gA$width
+
+distr.by.diet <- ggarrange(trophic_for_distr, trophic_disp_distr, trophic_mig_distr, nrow = 1,labels = c("d", "e", "f"))
+
+
+
+distr_by_hypothesis <- ggarrange(distr_by_class, distr.by.diet, common.legend = F, nrow = 2)
+
+
+while (!is.null(dev.list()))  dev.off()
+
+jpeg(filename = "../figures/distr_by_hypothesis_May2023.jpeg", width = 14, height = 7, units = 'in', res = 1000)
+distr_by_hypothesis
+dev.off()
+
+```
+
+Create PCA plots for class and trophic guild. We plotted the standardized mass and movement values for three movement types, and also the residual of movement distance ~ body mass for each type.
+
+```{r PCA plots}
+
+traits$log.mass <- log10(traits$Mass_kg)
+traits$log.mig <- log10(traits$Migration_km)
+traits$log.disp <- log10(traits$dispersal_km)
+traits$log.for <- log10(traits$hr.radius)
+ 
+
+traits <- traits[-which(traits$log.mig == -Inf),]
+traits <- traits[which(!is.na(traits$log.for)),]
+traits <- traits[which(!is.na(traits$log.disp)),]
+
+
+names(traits)
+test <- decostand(traits[, 25:27], method = "standardize")
+
+# library(geometry)
+# blob <- convhulln(test, "FA")
+# obs.vol <- blob$vol
+
+v <- var(test)
+#View(v)
+diag(v) #check variance of traits in same order of magnitude (else need to transform)
+
+
+# z <- prcomp(test)  
+z <- prcomp(test)
+loadings.raw <- z$rotation
+
+
+pca_class <- ggbiplot(z, ellipse = TRUE, choices = c(1,2), groups = traits$class) +
+  scale_color_manual(values = class_cols) + 
+  xlab("PC1 (61.9%)")+
+  ylab("PC2 (22.9%)")+
+  theme_cowplot()
+
+pca_diet <- ggbiplot(z, ellipse = TRUE, choices = c(1,2), groups = traits$diet_broadest_cat) + 
+  scale_color_manual(values = diet_cols)+
+  xlab("PC1 (61.9%)")+
+  ylab("PC2 (22.9%)")+
+  theme_cowplot()
+
+
+pca1 <- ggarrange(pca_class, pca_diet, nrow = 2, legend = "none", labels = c("a", "c"))
+
+
+## residuals
+disp.bs <- lm(log.disp ~ log.mass, data = traits)
+#plot(log.disp ~ log.mass, data = traits)
+traits$disp.resid <- resid(disp.bs)
+
+mig.bs <- lm(log.mig ~ log.mass, data = traits)
+#plot(log.mig ~ log.mass, data = traits)
+traits$mig.resid <- resid(mig.bs)
+
+for.bs <- lm(log.for ~ log.mass, data = traits)
+#plot(log.for ~ log.mass, data = traits)
+traits$for.resid <- resid(for.bs)
+
+#names(traits)
+test2 <- decostand(traits[, 28:30], method = "standardize")
+
+v2 <- var(test2)
+#View(v2)
+
+z2 <- prcomp(test2)
+# loadings.z2 <- z2$rotation
+
+ggbiplot(z2, choices = c(1,2), cex = 0.7)
+
+pca_class_res <- ggbiplot(z2, ellipse = TRUE, choices = c(1,2), groups = traits$class) +
+  scale_color_manual(values = class_cols) + 
+  xlab("PC1 (61.4%)")+
+  ylab("PC2 (20.5%)")+
+  theme_cowplot()
+
+pca_diet_res <- ggbiplot(z2, ellipse = TRUE, choices = c(1,2), groups = traits$diet_broadest_cat) + 
+  scale_color_manual(values = diet_cols)+
+  xlab("PC1 (61.4%)")+
+  ylab("PC2 (20.5%)")+
+  theme_cowplot()
+
+# Get the gtables
+
+# Get the gtables
+gA <- ggplotGrob(pca_class)
+gB <- ggplotGrob(pca_diet)
+gC <- ggplotGrob(pca_class_res)
+gD <- ggplotGrob(pca_diet_res)
+
+gB$widths <- gA$widths
+gC$widths <- gA$widths
+gD$widths <- gA$widths
+
+gA$heights <- gC$heights
+gB$heights <- gC$heights
+gD$heights <- gC$heights
+
+# Arrange the two charts.
+# The legend boxes are centered
+
+while (!is.null(dev.list()))  dev.off()
+jpeg(file = "../figures/Figure3_01May2023.jpeg", width = 10, height = 10, units = "in", res = 1000)
+grid.arrange(gA, gC, gB, gD, nrow = 2, padding = 2)
+dev.off()
+
+
+```
+
+
+The following code chunk generates Figure 5.
+
+```{r Figure 5 predicted draws}
+
+class_dispersal <- readRDS("../mods/class.disp_withyear.rds")
+class_foraging <- readRDS("../mods/class.for_withyear.rds")
+class_migration <- readRDS("../mods/class.mig_withyear.rds")
+
+
+pred_mod_class_dispersal <- traits %>%
+  group_by(class) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+            dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7)) %>% 
+  add_epred_draws(class_dispersal)
+
+pred_mod_class_foraging <- traits %>%
+  group_by(class) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+            foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7)) %>% 
+  add_epred_draws(class_foraging)
+
+pred_mod_class_migration <- traits %>%
+  group_by(class) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+            migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm=TRUE), by = 7)) %>% 
+  add_epred_draws(class_migration)
+
+
+
+class_foraging_plot <- ggplot() +
+  geom_point(data = traits, aes(x = Mass_kg, y = log10(hr.radius), color = ordered(class))) +
+  stat_lineribbon(data = pred_mod_class_foraging, 
+                  aes(y = log10(.epred), x = Mass_kg, color = ordered(class), fill = ordered(class)), 
+                  .width = c(.95), alpha = 0.4) +
+  scale_color_manual(values = class_cols, name = "Class")+
+  scale_fill_manual(values = class_cols, name = "Class") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  # scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+  #               labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")
+
+
+class_dispersal_plot <- ggplot()+
+  geom_point(data = traits, aes(x = Mass_kg, y = log10(dispersal_km), color = ordered(class))) +
+  stat_lineribbon(data =pred_mod_class_dispersal,
+                  aes(y = log10(.epred), x = Mass_kg,
+                      color = ordered(class), fill = ordered(class)),
+                  .width = 0.95, alpha = 0.4)+
+  scale_color_manual(values = class_cols, name = "Class")+
+  scale_fill_manual(values = class_cols, name = "Class") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  # scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+  #               labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")
+
+
+class_migration_plot <- ggplot() +
+  geom_point(data = traits, aes(x = Mass_kg, y = log10(Migration_km), color = ordered(class))) +
+  stat_lineribbon(data = pred_mod_class_migration, 
+                  aes(y = log10(.epred), x = Mass_kg, color = ordered(class),fill =ordered(class)), 
+                  .width = c(.95), alpha = 0.4) +
+  scale_color_manual(values = class_cols, name = "Class")+
+  scale_fill_manual(values = class_cols, name = "Class") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  # scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+  #               labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Migration distance (km)")
+
+
+### trophic guild models
+traits$diet_broadest_cat <- as.factor(traits$diet_broadest_cat)
+
+trophic_foraging <- readRDS("../mods/trophic.for_withyear.rds")
+trophic_dispersal <- readRDS("../mods/trophic.disp_withyear.rds")
+trophic_migration <- readRDS("../mods/trophic.mig_withyear.rds")
+
+
+pred_mod_trophic_foraging <- traits %>%
+  group_by(diet_broadest_cat) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+            foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7)) %>% 
+  add_epred_draws(trophic_foraging)
+
+pred_mod_trophic_dispersal <- traits %>%
+  group_by(diet_broadest_cat) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+            dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7)) %>% 
+  add_epred_draws(trophic_dispersal)
+
+pred_mod_trophic_migration <- traits %>%
+  group_by(diet_broadest_cat) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+            migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm=TRUE), by = 7)) %>% 
+  add_epred_draws(trophic_migration)
+
+
+
+trophic_foraging_plot <- ggplot() +
+  geom_point(data = traits, aes(x = Mass_kg, y = log10(hr.radius), color = ordered(diet_broadest_cat))) +
+  stat_lineribbon(data = pred_mod_trophic_foraging, 
+                  aes(y = log10(.epred), x = Mass_kg, color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)), 
+                  .width = c(.95), alpha = 0.4) +
+  scale_color_manual(values = diet_cols, name = "Trophic Guild")+
+  scale_fill_manual(values = diet_cols, name = "Trophic Guild") +
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  # scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+  #               labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")
+
+
+trophic_dispersal_plot <- ggplot()+
+  geom_point(data = traits, aes(x = Mass_kg, y = log10(dispersal_km), color = ordered(diet_broadest_cat))) +
+  stat_lineribbon(data = pred_mod_trophic_dispersal,
+                  aes(y = log10(.epred), x = Mass_kg,
+                      color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)),
+                  .width = 0.95, alpha = 0.4)+
+  scale_color_manual(values = diet_cols, name = "Trophic Guild")+
+  scale_fill_manual(values = diet_cols, name = "Trophic Guild") +
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  # scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+  #               labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")
+
+trophic_migration_plot <- ggplot() +
+  geom_point(data = traits, aes(x = Mass_kg, y = log10(Migration_km), color = ordered(diet_broadest_cat))) +
+  stat_lineribbon(data = pred_mod_class_migration, 
+                  aes(y = log10(.epred), x = Mass_kg, color = ordered(diet_broadest_cat),fill =ordered(diet_broadest_cat)), 
+                  .width = c(.95), alpha = 0.4) +
+  scale_color_manual(values = diet_cols, name = "Trophic Guild")+
+  scale_fill_manual(values = diet_cols, name = "Trophic Guild") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  # scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+  #               labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Migration distance (km)")
+
+```
+
+```{r render fig 5}
+
+class_figs <- ggarrange(class_foraging_plot, class_dispersal_plot, class_migration_plot, nrow = 1, 
+                       common.legend = T, legend = "right", labels = c("d", "e", "f"))
+
+diet_figs <- ggarrange(trophic_foraging_plot, trophic_dispersal_plot, trophic_migration_plot, nrow = 1, 
+                       common.legend = T, legend = "right", labels = c("d", "e", "f"))
+
+Figure5 <- ggarrange(class_figs, diet_figs, nrow=3, common.legend=FALSE)
+
+while (!is.null(dev.list()))  dev.off()
+jpeg(filename = "../figures/Fig5_epreds_01May2023.jpeg", width = 12, height = 4.5, units = 'in', res = 1000)
+Figure5
+dev.off()
+
+```
