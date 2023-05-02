@@ -230,7 +230,7 @@ order_withyear_prior <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
 
 aves.disp_withyear <- brm(bf_dispersal_class_withyear, data = aves, 
                          control = list(adapt_delta = 0.995, max_treedepth=20), 
-                         iter = 3000, cores = 4, prior = order_withyear_prior)
+                         iter = 7000, cores = 4, prior = order_withyear_prior)
 
 aves.for_withyear <- brm(bf_home_range_class_withyear, data = aves, 
                         control = list(adapt_delta = 0.995, max_treedepth=20), 
@@ -386,6 +386,12 @@ class.for_withyear_nonmigrators <- brm(bf_home_range_class_withyear_nonmigrators
                         iter = 3000, cores = 4, prior = class_withyear_prior_nonmigrators)
 
 ```
+```{r save nonmigrator class mods}
+saveRDS(class.disp_withyear_nonmigrators, "../mods/class.disp_withyear_nonmigrators.rds")
+
+saveRDS(class.for_withyear_nonmigrators, "../mods/class.for_withyear_nonmigrators.rds")
+
+```
 
 ```{r nonmigrators only by trophic guild}
 bf_dispersal_trophic_withyear_nonmigrators <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|diet_broadest_cat) + dispersal_year) + lognormal(link = "identity")
@@ -416,5 +422,9 @@ trophic.for_withyear_nonmigrators <- brm(bf_home_range_trophic_withyear_nonmigra
                          prior = trophic_year_prior_for_nonmigrators)
 
 ```
+```{r save trophic nonmigrator mods}
+saveRDS(trophic.disp_withyear_nonmigrators, "../mods/trophic.disp_withyear_nonmigrators.rds")
 
+saveRDS(trophic.for_withyear_nonmigrators, "../mods/trophic.for_withyear_nonmigrators.rds")
+```
 
