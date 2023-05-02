@@ -5,7 +5,7 @@ date: "12/04/2023"
 output: html_document
 ---
 
-```{r}
+```{r load packages and data}
 library(brms)
 library(stringr)
 library(dplyr)
@@ -318,8 +318,8 @@ trophic_year_prior_disp_migrators <- prior(normal(0,5),class = 'b', coef = logMa
   prior(student_t(6, 0, 2.9), class = 'sd') +
   prior(student_t(5, 0, 2.9), class = 'sigma')
 
-## works
-trophic.disp_withyea_migratorsr <- brm(bf_dispersal_trophic_withyear_migrators, data = traits_migrators, 
+
+trophic.disp_withyear_migrators <- brm(bf_dispersal_trophic_withyear_migrators, data = traits_migrators, 
                           control = list(adapt_delta = 0.995, max_treedepth=20), 
                           iter = 3000, cores = 16,
                           prior = trophic_year_prior_disp_migrators)
@@ -362,9 +362,59 @@ saveRDS(trophic_year_prior_mig_migrators, "../mods/trophic_year_prior_mig_migrat
 
 
 Moving on to non-migrators, univariate model, grouped by class
-```{r migrators only, class univar mod with year}
+```{r nonmigrators only by class}
 traits_nonmigrators <- traits_phylo %>% filter(Migration_km == 0)
 
+bf_dispersal_class_withyear_nonmigrators <- bf(dispersal_km ~ log(Mass_kg) + 
+                      (log(Mass_kg)|p|class) + dispersal_year) + lognormal()
+bf_home_range_class_withyear_nonmigrators <- bf(hr.radius ~ log(Mass_kg)+ 
+                      (log(Mass_kg)|p|class) + foraging_year) +  lognormal()
 
 
->>>>>>> 030b89713bf99e5ce9a884bad7e33fd2dcf99496
+class_withyear_prior_nonmigrators <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
+  prior(student_t(4, 0, 4), class = 'Intercept') +
+  prior(student_t(6, 0, 2.9), class = 'sd') +
+  prior(student_t(4, 0, 2.9), class = 'sigma')
+
+class.disp_withyear_nonmigrators <- brm(bf_dispersal_class_withyear_nonmigrators, data = traits_nonmigrators, 
+                         control = list(adapt_delta = 0.995, max_treedepth=20), 
+                         iter = 4000, cores = 4, prior = class_withyear_prior_nonmigrators)
+
+
+class.for_withyear_nonmigrators <- brm(bf_home_range_class_withyear_nonmigrators, data = traits_nonmigrators, 
+                        control = list(adapt_delta = 0.995, max_treedepth=20), 
+                        iter = 3000, cores = 4, prior = class_withyear_prior_nonmigrators)
+
+```
+
+```{r nonmigrators only by trophic guild}
+bf_dispersal_trophic_withyear_nonmigrators <- bf(dispersal_km ~ log(Mass_kg) + (log(Mass_kg)|diet_broadest_cat) + dispersal_year) + lognormal(link = "identity")
+bf_home_range_trophic_withyear_nonmigrators <- bf(hr.radius ~ log(Mass_kg)+ (log(Mass_kg)|diet_broadest_cat) + foraging_year) + lognormal(link = "identity")
+
+
+
+trophic_year_prior_disp_nonmigrators <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
+  prior(normal(0,5),class = 'b', coef = dispersal_year) +
+  prior(student_t(5, 0, 3), class = 'Intercept') +
+  prior(student_t(6, 0, 2.9), class = 'sd') +
+  prior(student_t(5, 0, 2.9), class = 'sigma')
+
+
+trophic.disp_withyear_nonmigrators <- brm(bf_dispersal_trophic_withyear_nonmigrators, data = traits_nonmigrators, 
+                          control = list(adapt_delta = 0.995, max_treedepth=20), 
+                          iter = 3000, cores = 16,
+                          prior = trophic_year_prior_disp_nonmigrators)
+
+trophic_year_prior_for_nonmigrators <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
+  prior(normal(0,5),class = 'b', coef = foraging_year) +
+  prior(student_t(5, 0, 3), class = 'Intercept') +
+  prior(student_t(6, 0, 2.9), class = 'sd') +
+  prior(student_t(5, 0, 2.9), class = 'sigma')
+
+trophic.for_withyear_nonmigrators <- brm(bf_home_range_trophic_withyear_nonmigrators, data = traits_nonmigrators, 
+                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 4000, cores = 16,
+                         prior = trophic_year_prior_for_nonmigrators)
+
+```
+
+
