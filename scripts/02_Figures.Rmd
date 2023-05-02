@@ -40,8 +40,8 @@ traits <- read.csv("../data/Traits_final_cleaned.csv", fileEncoding="latin1")
 class_cols <- c(Amphibia = "#4f412b", Aves = "#865a3c", Chondrichthyes = "#ba783e", 
                 Mammalia = "#e69c4c", Reptilia = "#fbcc74")
 
-diet_cols <- c(Carnivore = "#45681e", Herbivore = "#4a9152", 
-                Invertivore = "#64a8a8", Omnivore = "#cde5f9")
+diet_cols <- c(Carnivore = "#45681E", Herbivore = "#A3981C", 
+                Invertivore = "#CDCA82", Omnivore = "#85B6CE")
 
 ```
 

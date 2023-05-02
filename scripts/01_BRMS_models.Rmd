@@ -350,3 +350,11 @@ trophic.mig_withyear_migrators <- brm(bf_migration_trophic_withyear_migrators, d
 
 
 ```
+
+
+Moving on to non-migrators, univariate model, grouped by class
+```{r migrators only, class univar mod with year}
+traits_nonmigrators <- traits_phylo %>% filter(Migration_km == 0)
+
+
+
