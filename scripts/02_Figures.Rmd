@@ -148,25 +148,29 @@ trophic_mig_distr <-  traits %>%
 ##  make the widths all the same
 # Get the gtables
 gA <- ggplotGrob(class_for_distr)
-gB <- ggplotGrob(trophic_for_distr)
-gC <- ggplotGrob(trophic_disp_distr)
-gD <- ggplotGrob(trophic_mig_distr)
+gB <- ggplotGrob(class_disp_distr)
+gC <- ggplotGrob(class_mig_distr)
+gD <- ggplotGrob(trophic_for_distr)
+gE <- ggplotGrob(trophic_disp_distr)
+gF <- ggplotGrob(trophic_mig_distr)
 
-gB$widths <- gA$widths
-gC$widths <- gA$width
-gD$widths <- gA$width
+gA$heights <- gC$heights
+gB$heights <- gC$heights
+gD$heights <- gC$heights
+gE$heights <- gC$heights
+gF$heights <- gC$heights
 
-distr.by.diet <- ggarrange(trophic_for_distr, trophic_disp_distr, trophic_mig_distr, nrow = 1,labels = c("d", "e", "f"))
 
-
-
-distr_by_hypothesis <- ggarrange(distr_by_class, distr.by.diet, common.legend = F, nrow = 2)
+# distr.by.diet <- ggarrange(trophic_for_distr, trophic_disp_distr, trophic_mig_distr, nrow = 1,labels = c("d", "e", "f"))
+# 
+# 
+# 
+# distr_by_hypothesis <- ggarrange(distr_by_class, distr.by.diet, common.legend = F, nrow = 2)
 
 
 while (!is.null(dev.list()))  dev.off()
-
-jpeg(filename = "../figures/distr_by_hypothesis_May2023.jpeg", width = 14, height = 7, units = 'in', res = 1000)
-distr_by_hypothesis
+jpeg(filename = "../figures/distr_by_hypothesis_May2023.jpeg", width = 8.75, height = 10, units = 'in', res = 1000)
+grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 3, padding = 2)
 dev.off()
 
 ```
