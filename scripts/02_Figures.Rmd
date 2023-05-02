@@ -23,10 +23,10 @@ library(grid)
 library(gridExtra)
 
 # for plotting fig 4
-library(vegan) ## for PCA
-#library(devtools)
+#library(vegan) ## for PCA
+#library(devtools) # to install ggbiplot from github
 #install_github("vqv/ggbiplot")
-library(ggbiplot) ## for PCA
+#library(ggbiplot) ## for PCA
 
 # for plotting fig 5
 library(tidybayes)
@@ -49,7 +49,72 @@ diet_cols <- c(Carnivore = "#45681E", Herbivore = "#A3981C",
 The code below is used to create Figure 2, which shows the distribution of the data for each movement type and hypothesis.
 ```{r Figure 2 - data distributions}
 
-# Figure 2 top row: group by taxonomic class
+# Figure 2 top row: group by movement medium
+# this is only used once, so assigning colors here rather than in chunk 1
+media_cols <- c(air = "#41476b", land = "#9e6374", freshwater = "#c67b6f", marine = "#de9b71")
+
+
+# hist by media
+traits$media_foraging[which(traits$media_foraging =="water")] <- "freshwater"
+traits$media_foraging[which(traits$media_foraging =="aquatic")] <- "freshwater"
+
+media_for_distr <- traits %>%
+  filter(media_foraging == "air" | media_foraging == "land" |
+           media_foraging == "freshwater"| media_foraging == "marine") %>%
+  ggplot(aes(x = media_foraging, y = hr.radius))+
+    geom_violin(aes(color = media_foraging, fill = media_foraging))  + 
+  geom_boxplot(width = 0.2)+
+  scale_color_manual(values = media_cols, name = "Medium")+
+  scale_fill_manual(values = media_cols, name = "Medium") +
+  scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
+  theme(legend.position = "none")+
+  cowplot::theme_cowplot()+
+  ylab("Foraging radius (km)")+
+  # xlab("Foraging medium")+
+  theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  theme(legend.position = "none")
+
+traits$media_dispersal[which(traits$media_dispersal =="water")] <- "freshwater"
+traits$media_foraging[which(traits$media_foraging =="aquatic")] <- "freshwater"
+
+media_disp_distr <- traits %>%
+  filter(media_dispersal == "air" | media_dispersal == "land" |
+           media_dispersal == "freshwater"| media_dispersal == "marine") %>%
+  ggplot(aes(x = media_dispersal, y = dispersal_km))+
+    geom_violin(aes(color = media_dispersal, fill = media_dispersal))  + 
+  geom_boxplot(width = 0.2)+
+  scale_color_manual(values = media_cols, name = "Medium")+
+  scale_fill_manual(values = media_cols, name = "Medium") +
+  scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
+  theme(legend.position = "none")+
+  cowplot::theme_cowplot()+
+  ylab("Dispersal distance (km)")+
+  # xlab("Dispersal medium")+
+  theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  theme(legend.position = "none")
+
+
+traits$media_migration[which(traits$media_migration =="water")] <- "freshwater"
+traits$media_foraging[which(traits$media_foraging =="aquatic")] <- "freshwater"
+
+media_mig_distr <- traits %>%
+  filter(media_migration == "air" | media_migration == "land" |
+           media_migration == "freshwater"| media_migration == "marine") %>%
+ggplot(aes(x = media_migration, y = (Migration_km + 1)))+
+    geom_violin(aes(color = media_migration, fill = media_migration))  + 
+  geom_boxplot(width = 0.2)+
+  scale_color_manual(values = media_cols, name = "Medium")+
+  scale_fill_manual(values = media_cols, name = "Medium") +
+  scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
+  theme(legend.position = "none")+
+  cowplot::theme_cowplot()+
+  ylab("Migration distance (km + 1)")+
+  # xlab("Migration medium")+
+  theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  theme(legend.position = "none")
+
+
+# Figure 2 mid row: group by taxonomic class
 
 
 class_for_distr <- ggplot(traits, aes(x = class, y = hr.radius)) + 
@@ -61,8 +126,8 @@ class_for_distr <- ggplot(traits, aes(x = class, y = hr.radius)) +
   theme(legend.position = "none")+
   cowplot::theme_cowplot()+
   ylab("Foraging radius (km)")+
-  xlab("Class")+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  # xlab("Class")+
+  theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   theme(legend.position = "none")
 
 
@@ -75,8 +140,8 @@ class_disp_distr <- ggplot(traits, aes(x = class, y = dispersal_km)) +
   theme(legend.position = "none")+
   cowplot::theme_cowplot()+
   ylab("Dispersal distance (km)")+
-  xlab("Class")+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  # xlab("Class")+
+  theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   theme(legend.position = "none")
 
 class_mig_distr <- ggplot(traits, aes(x = class, y = (Migration_km + 1))) + 
@@ -88,8 +153,8 @@ class_mig_distr <- ggplot(traits, aes(x = class, y = (Migration_km + 1))) +
   theme(legend.position = "none")+
   cowplot::theme_cowplot()+
   ylab("Migration distance (km + 1)")+
-  xlab("Class")+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  # xlab("Class")+
+  theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   theme(legend.position = "none")
 
 distr_by_class <- ggarrange(class_for_distr, class_disp_distr, class_mig_distr, nrow = 1, 
@@ -110,8 +175,8 @@ trophic_for_distr <-  traits %>%
   theme(legend.position = "none")+
   cowplot::theme_cowplot()+
   ylab("Foraging radius (km)")+
-  xlab("Trophic Guild")+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  # xlab("Trophic Guild")+
+  theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   theme(legend.position = "none")
 
 trophic_disp_distr <-  traits %>% 
@@ -125,8 +190,8 @@ trophic_disp_distr <-  traits %>%
   theme(legend.position = "none")+
   cowplot::theme_cowplot()+
   ylab("Dispersal distance (km)")+
-  xlab("Trophic Guild")+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  # xlab("Trophic Guild")+
+  theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   theme(legend.position = "none")
 
 
@@ -141,8 +206,8 @@ trophic_mig_distr <-  traits %>%
   theme(legend.position = "none")+
   cowplot::theme_cowplot()+
   ylab("Migration distance (km + 1)")+
-  xlab("Trophic Guild")+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
+  # xlab("Trophic Guild")+
+  theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   theme(legend.position = "none")
 
 ##  make the widths all the same
@@ -154,23 +219,24 @@ gD <- ggplotGrob(trophic_for_distr)
 gE <- ggplotGrob(trophic_disp_distr)
 gF <- ggplotGrob(trophic_mig_distr)
 
+gG <- ggplotGrob(media_for_distr)
+gH <- ggplotGrob(media_disp_distr)
+gI <- ggplotGrob(media_mig_distr)
+
 gA$heights <- gC$heights
 gB$heights <- gC$heights
 gD$heights <- gC$heights
 gE$heights <- gC$heights
 gF$heights <- gC$heights
+gG$heights <- gC$heights
+gH$heights <- gC$heights
+gI$heights <- gC$heights
 
-
-# distr.by.diet <- ggarrange(trophic_for_distr, trophic_disp_distr, trophic_mig_distr, nrow = 1,labels = c("d", "e", "f"))
-# 
-# 
-# 
-# distr_by_hypothesis <- ggarrange(distr_by_class, distr.by.diet, common.legend = F, nrow = 2)
 
 
 while (!is.null(dev.list()))  dev.off()
-jpeg(filename = "../figures/distr_by_hypothesis_May2023.jpeg", width = 8.75, height = 10, units = 'in', res = 1000)
-grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 3, padding = 2)
+jpeg(filename = "../figures/distr_by_hypothesis_May2023.jpeg", width = 12, height = 11, units = 'in', res = 1000)
+grid.arrange(gG, gH, gI, gA, gB, gC, gD,gE, gF, nrow = 3, padding = 2)
 dev.off()
 
 ```
@@ -193,9 +259,6 @@ traits <- traits[which(!is.na(traits$log.disp)),]
 names(traits)
 test <- decostand(traits[, 25:27], method = "standardize")
 
-# library(geometry)
-# blob <- convhulln(test, "FA")
-# obs.vol <- blob$vol
 
 v <- var(test)
 #View(v)
@@ -243,7 +306,7 @@ v2 <- var(test2)
 #View(v2)
 
 z2 <- prcomp(test2)
-# loadings.z2 <- z2$rotation
+loadings.z2 <- z2$rotation
 
 ggbiplot(z2, choices = c(1,2), cex = 0.7)
 
@@ -812,5 +875,11 @@ jpeg(filename = "../figures/trophic_posterior_means_slopes.jpeg", width = 9, hei
 trophic_post_mean_slopes
 dev.off()
 
+
+```
+
+```{r contingency table S1}
+class_diet <- table(traits$class, traits$diet_broadest_cat)
+chisq.test(class_diet, simulate.p.value = TRUE, B = 10000)
 
 ```

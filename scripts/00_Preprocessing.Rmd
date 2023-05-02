@@ -67,6 +67,33 @@ traits <- traits[-which(traits$scientific_name.x=='Tragelaphus_oryx'),]
 ```
 
 
+```{r clean up media}
+# create subset df with only SUPs with all three media ##142
+levels(traits$media_dispersal)
+levels(traits$media_dispersal) <- c(levels(traits$media_dispersal), "aquatic")
+traits$media_dispersal[which(traits$media_dispersal =="water")] <- "aquatic"
+
+traits_disp <- traits %>% 
+  filter(media_dispersal == "air" | media_dispersal == "land" | media_dispersal == "aquatic"| media_dispersal == "marine")
+
+levels(traits_disp$media_dispersal)
+traits_disp$media_dispersal <- factor(traits_disp$media_dispersal, levels = c("air", "aquatic", "land", "marine"))
+
+traits$media_foraging[which(traits$media_foraging =="water")] <- "aquatic"
+traits_for <- traits %>% 
+  filter(media_foraging == "air" | media_foraging == "land" | media_foraging == "aquatic"| media_foraging == "marine")
+levels(traits_for$media_foraging)
+traits_for$media_foraging <- droplevels(traits_for$media_foraging)
+
+traits$media_migration[which(traits$media_migration =="water")] <- "aquatic"
+traits_mig<- traits %>% 
+  filter(media_migration == "air" | media_migration == "land" | media_migration == "aquatic"| media_migration == "marine")
+levels(traits_mig$media_migration)
+traits_mig$media_migration <- factor(traits_mig$media_migration, levels = c("air", "aquatic", "land", "marine"))
+
+```
+
+
 ```{r ID databases, include = FALSE}
 # Find which studies have more than one entry, those are more likely to be the databases
 dispersal_source_count <- traits %>% 
