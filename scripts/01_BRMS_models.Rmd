@@ -350,12 +350,12 @@ trophic.mig_withyear_migrators <- brm(bf_migration_trophic_withyear_migrators, d
 
 
 ```
-<<<<<<< HEAD
+
 ```{r save trophic migrator only mod}
 saveRDS(trophic.disp_withyea_migratorsr, "../mods/trophic.disp_withyear_migrators.rds")
 
 ```
-=======
+
 
 ```{r save trophic migrator only mod]}
 saveRDS(trophic.disp_withyea_migratorsr, "../mods/trophic.disp_withyear_migrators.rds")

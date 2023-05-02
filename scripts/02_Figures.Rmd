@@ -481,7 +481,7 @@ gF$widths <- gC$widths
 # Figure5 <- ggarrange(class_figs, diet_figs, nrow=2, common.legend=FALSE)
 
 while (!is.null(dev.list()))  dev.off()
-jpeg(filename = "../figures/Fig5_epreds_01May2023.jpeg", width = 10, height = 10, units = 'in', res = 1000)
+jpeg(filename = "Fig5_epreds_01May2023.jpeg", width = 10, height = 10, units = 'in', res = 1000)
 grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 3, padding = 2)
 dev.off()
 
