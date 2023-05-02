@@ -479,8 +479,6 @@ jpeg(filename = "../figures/Fig5_epreds_01May2023.jpeg", width = 14, height = 7,
 grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 2, padding = 2)
 dev.off()
 
-<<<<<<< Updated upstream
-=======
 ```
 
 Class posterior means, generated for Figure S4
@@ -655,6 +653,5 @@ while (!is.null(dev.list()))  dev.off()
 jpeg(filename = "../figures/trophic_figs_posteriormeans.jpeg", width = 12, height = 3, units = 'in', res = 1000)
 trophic_figs_posterior_means
 dev.off()
->>>>>>> Stashed changes
 
 ```
