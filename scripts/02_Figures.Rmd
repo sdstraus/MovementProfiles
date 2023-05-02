@@ -878,8 +878,43 @@ dev.off()
 
 ```
 
-```{r contingency table S1}
+```{r Covariance matrix and contingency table S1}
 class_diet <- table(traits$class, traits$diet_broadest_cat)
 chisq.test(class_diet, simulate.p.value = TRUE, B = 10000)
 
+
+
+library(stats)
+library(gplots)
+
+name <- traits$scientific_name
+home.range <- log10(traits$hr.radius)
+dispersal <- log10(traits$dispersal_km)
+migration_km1 <- log10(traits$Migration_km+1)
+migration <- log10(traits$Migration_km)
+mass <- log10(traits$Mass_kg)
+
+cov.mat <- data.frame(home.range, dispersal, migration_km1, mass)
+matrix <- cov(cov.mat)
+diag(matrix) <- NA
+View(matrix)
+
+# remove cases where migration is zero, matrix only for migrators
+cov.mat_migrators <- data.frame(home.range, dispersal, migration, mass)
+cov.mat2 <- cov.mat_migrators[-c(which(cov.mat_migrators$migration == "-Inf")),]
+
+matrix2 <- cov(cov.mat2, use = "pairwise.complete.obs") 
+diag(matrix2) <- NA
+View(matrix2)
+
+
+### non-migrators only ###
+cov.mat.nonmig <- cov.mat_migrators %>% filter(migration == "-Inf")
+# remove migration column
+cov.mat.nonmig <- cov.mat.nonmig %>% select(-migration)
+
+matrix.nonmig <- cov(cov.mat.nonmig, use = "pairwise.complete.obs") #go with this one
+# diag(matrix2) <- NA
+diag(matrix.nonmig) <- NA
+View(matrix.nonmig)
 ```
