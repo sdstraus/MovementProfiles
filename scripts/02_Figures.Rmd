@@ -662,3 +662,155 @@ dev.off()
 
 
 ```
+
+Posterior mean slope distributions, as per reviewer suggestion from EcoLetts, grouped by class.
+
+```{r posterior mean slopes by class}
+# class_dispersal <- readRDS("../mods/class.disp_withyear.rds")
+# class_foraging <- readRDS("../mods/class.for_withyear.rds")
+# class_migration <- readRDS("../mods/class.mig_withyear.rds")
+
+# foraging
+coef_no_summary_for <- coef(class_foraging, summary = FALSE)
+coef_no_summary_for$class %>% dimnames()
+# 1 = iteration, #2 class #3 slopes 
+coef_no_summary_for$class[,,] %>% dim()
+apply(coef_no_summary_for$class[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
+
+## posterior distribution
+class_foraging_slope <- coef_no_summary_for$class[,,2] %>% 
+  as.data.frame() %>% 
+  pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
+  ggplot(aes(x = posterior_samples)) +
+  facet_wrap(~slope, ncol = 1) +
+  geom_histogram(stat = "bin", bins = 100) +
+  geom_vline(xintercept = 0, colour = 'red') +
+  theme_cowplot()+
+  theme(strip.background = element_rect(fill = "white"))+
+  xlab("Posterior mean slope")
+
+
+# dispersal
+coef_no_summary_disp <- coef(class_dispersal, summary = FALSE)
+coef_no_summary_disp$class %>% dimnames()
+# 1 = iteration, #2 class #3 slopes 
+coef_no_summary_disp$class[,,] %>% dim()
+apply(coef_no_summary_disp$class[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
+
+class_dispersal_slope <- coef_no_summary_disp$class[,,2] %>% 
+  as.data.frame() %>% 
+  pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
+  ggplot(aes(x = posterior_samples)) +
+  facet_wrap(~slope, ncol = 1) +
+  geom_histogram(stat = "bin", bins = 100) +
+  geom_vline(xintercept = 0, colour = 'red') +
+  theme_cowplot()+
+  theme(strip.background = element_rect(fill = "white"))+
+  xlab("Posterior mean slope")
+
+
+# migration
+coef_no_summary_mig <- coef(class_migration, summary = FALSE)
+coef_no_summary_mig$class %>% dimnames()
+# 1 = iteration, #2 class #3 slopes 
+coef_no_summary_mig$class[,,] %>% dim()
+apply(coef_no_summary_mig$class[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
+
+class_migration_slope <- coef_no_summary_mig$class[,,2] %>% 
+  as.data.frame() %>% 
+  pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
+  ggplot(aes(x = posterior_samples)) +
+  facet_wrap(~slope, ncol = 1) +
+  geom_histogram(stat = "bin", bins = 100) +
+  geom_vline(xintercept = 0, colour = 'red') +
+  theme_cowplot()+
+  theme(strip.background = element_rect(fill = "white"))+
+  xlab("Posterior mean slope")
+
+
+
+class_post_mean_slopes <- ggarrange(class_foraging_slope, class_dispersal_slope, class_migration_slope, 
+          labels = c("Foraging", "Dispersal", "Migration"),
+          nrow = 1)
+
+jpeg(filename = "../figures/class_posterior_means_slopes.jpeg", width = 9, height = 7, units = 'in', res = 1000)
+class_post_mean_slopes
+dev.off()
+```
+
+Posterior mean slope distributions, as per reviewer suggestion from EcoLetts, grouped by trophic guild.
+
+
+```{r posterior mean slopes by trophic guild}
+# trophic_foraging <- readRDS("../mods/trophic.for_withyear.rds")
+# trophic_dispersal <- readRDS("../mods/trophic.disp_withyear.rds")
+# trophic_migration <- readRDS("../mods/trophic.mig_withyear.rds")
+
+# foraging
+coef_no_summary_for_trophic <- coef(trophic_foraging, summary = FALSE)
+coef_no_summary_for_trophic$diet_broadest_cat %>% dimnames()
+# 1 = iteration, #2 diet_broadest_cat #3 slopes 
+coef_no_summary_for_trophic$diet_broadest_cat[,,] %>% dim()
+apply(coef_no_summary_for_trophic$diet_broadest_cat[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
+
+## posterior distribution
+trophic_foraging_slope <- coef_no_summary_for_trophic$diet_broadest_cat[,,2] %>% 
+  as.data.frame() %>% 
+  pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
+  ggplot(aes(x = posterior_samples)) +
+  facet_wrap(~slope, ncol = 1) +
+  geom_histogram(stat = "bin", bins = 100) +
+  geom_vline(xintercept = 0, colour = 'red') +
+  theme_cowplot()+
+  theme(strip.background = element_rect(fill = "white"))+
+  xlab("Posterior mean slope")
+
+
+# dispersal
+coef_no_summary_disp_trophic <- coef(trophic_dispersal, summary = FALSE)
+coef_no_summary_disp_trophic$diet_broadest_cat %>% dimnames()
+# 1 = iteration, #2 diet_broadest_cat #3 slopes 
+coef_no_summary_disp_trophic$diet_broadest_cat[,,] %>% dim()
+apply(coef_no_summary_disp_trophic$diet_broadest_cat[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
+
+trophic_dispersal_slope <- coef_no_summary_disp_trophic$diet_broadest_cat[,,2] %>% 
+  as.data.frame() %>% 
+  pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
+  ggplot(aes(x = posterior_samples)) +
+  facet_wrap(~slope, ncol = 1) +
+  geom_histogram(stat = "bin", bins = 100) +
+  geom_vline(xintercept = 0, colour = 'red') +
+  theme_cowplot()+
+  theme(strip.background = element_rect(fill = "white"))+
+  xlab("Posterior mean slope")
+
+
+# migration
+coef_no_summary_mig_trophic <- coef(trophic_migration, summary = FALSE)
+coef_no_summary_mig_trophic$diet_broadest_cat %>% dimnames()
+# 1 = iteration, #2 diet_broadest_cat #3 slopes 
+coef_no_summary_mig_trophic$diet_broadest_cat[,,] %>% dim()
+apply(coef_no_summary_mig_trophic$diet_broadest_cat[,,], c(2,3), FUN = function(x) c(mean(x), quantile(x, c(0.025, 0.5,0.975))))
+
+trophic_migration_slope <- coef_no_summary_mig_trophic$diet_broadest_cat[,,2] %>% 
+  as.data.frame() %>% 
+  pivot_longer(everything(),names_to = "slope", values_to = "posterior_samples") %>% 
+  ggplot(aes(x = posterior_samples)) +
+  facet_wrap(~slope, ncol = 1) +
+  geom_histogram(stat = "bin", bins = 100) +
+  geom_vline(xintercept = 0, colour = 'red') +
+  theme_cowplot()+
+  theme(strip.background = element_rect(fill = "white"))+
+  xlab("Posterior mean slope")
+
+
+trophic_post_mean_slopes <- ggarrange(trophic_foraging_slope, trophic_dispersal_slope, trophic_migration_slope, 
+          labels = c("Foraging", "Dispersal", "Migration"),
+          nrow = 1)
+
+jpeg(filename = "../figures/trophic_posterior_means_slopes.jpeg", width = 9, height = 7, units = 'in', res = 1000)
+trophic_post_mean_slopes
+dev.off()
+
+
+```
