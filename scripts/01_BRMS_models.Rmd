@@ -213,8 +213,8 @@ saveRDS(class_multivar, "../mods/class_multivar_withyear.rds")
 
 For supplemental Figure S1: univariate models by order. First separate out orders
 
-```{r Order Aves univariate with year}
-aves <- traits %>% filter(class == "Aves")
+```{r Order-aves-withyear}
+aves <- traits_phylo %>% filter(class == "Aves")
 
 bf_dispersal_aves_withyear <- bf(dispersal_km ~ log(Mass_kg) + 
                       (log(Mass_kg)|p|order) + dispersal_year) + lognormal()
@@ -223,22 +223,22 @@ bf_home_range_aves_withyear <- bf(hr.radius ~ log(Mass_kg)+
 bf_migration_aves_withyear <- bf(Migration_km ~ log(Mass_kg) + 
                       (log(Mass_kg)|p|order) + migration_year) + hurdle_lognormal()
 
-# class_withyear_prior <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
-#   prior(student_t(4, 0, 4), class = 'Intercept') +
-#   prior(student_t(6, 0, 2.9), class = 'sd') +
-#   prior(student_t(4, 0, 2.9), class = 'sigma')
+order_withyear_prior <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
+  prior(student_t(4, 0, 4), class = 'Intercept') +
+  prior(student_t(6, 0, 2.9), class = 'sd') +
+  prior(student_t(4, 0, 2.9), class = 'sigma')
 
 aves.disp_withyear <- brm(bf_dispersal_class_withyear, data = aves, 
                          control = list(adapt_delta = 0.995, max_treedepth=20), 
-                         iter = 3000, cores = 4)
+                         iter = 3000, cores = 4, prior = order_withyear_prior)
 
 aves.for_withyear <- brm(bf_home_range_class_withyear, data = aves, 
                         control = list(adapt_delta = 0.995, max_treedepth=20), 
-                        iter = 3000, cores = 4)
+                        iter = 3000, cores = 4, prior = order_withyear_prior)
 
 aves.mig_withyear <- brm(bf_migration_class_withyear, data = aves, 
                         control = list(adapt_delta = 0.995, max_treedepth=20), 
-                        iter = 3000, cores = 4)
+                        iter = 3000, cores = 4, prior = order_withyear_prior)
 
-saveRDS(mod4.3_aves, "../mods/mod4.3/mod4.3_aves.rds")
+#saveRDS(mod4.3_aves, "../mods/mod4.3/mod4.3_aves.rds")
 ```
