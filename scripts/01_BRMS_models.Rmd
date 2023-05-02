@@ -332,7 +332,7 @@ trophic_year_prior_for_migrators <- prior(normal(0,5),class = 'b', coef = logMas
 
 
 trophic.for_withyear_migrators <- brm(bf_home_range_trophic_withyear_migrators, data = traits_migrators, 
-                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 3000, cores = 16,
+                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 4000, cores = 16,
                          prior = trophic_year_prior_for_migrators)
 
 
@@ -354,14 +354,11 @@ trophic.mig_withyear_migrators <- brm(bf_migration_trophic_withyear_migrators, d
 ```{r save trophic migrator only mod}
 saveRDS(trophic.disp_withyea_migratorsr, "../mods/trophic.disp_withyear_migrators.rds")
 
+saveRDS(trophic.for_withyear_migrators, "../mods/trophic.for_withyear_migrators.rds")
+
+
+saveRDS(trophic_year_prior_mig_migrators, "../mods/trophic_year_prior_mig_migrators.rds")
 ```
-
-
-```{r save trophic migrator only mod]}
-saveRDS(trophic.disp_withyea_migratorsr, "../mods/trophic.disp_withyear_migrators.rds")
-
-```
-
 
 
 Moving on to non-migrators, univariate model, grouped by class
