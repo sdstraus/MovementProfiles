@@ -5,7 +5,7 @@ library(plotly)
 ui <-  fluidPage(
     titlePanel("Movement at three scales"),
     sidebarLayout(
-        sidebarPanel(em("Straus et al., 2022, Macroecological variation in movement profiles: body size does not explain it all, for submission to Ecology Letters")
+        sidebarPanel(em("Straus et al., 2022, Macroecological variation in movement profiles: body size does not explain it all, for submission to Global Ecology and Biogeography")
         ),
         mainPanel(
             p("Figure 3. log10-transformed movement types on 3-axes for 321 species. 
@@ -36,10 +36,10 @@ server <- function(input, output){
                     "Trophic Guild" = traits$diet_broadest_cat)
     
     color <- switch(input$var,
-                    "Media" = c("#000004FF", "#51127CFF", "#B63679FF", "#FB8861FF"),
-                    "Class" = c("#440154FF", "#3B528BFF", "#21908CFF", "#5DC863FF", "#FDE725FF"),
-                    "Trophic Guild" = c("#0D0887FF", "#7E03A8FF", "#CC4678FF", "#F89441FF"))
-    
+                    "Media" = c("#41476b", "#9e6374", "#c67b6f", "#de9b71"),
+                    "Class" = c("#4f412b", "#865a3c", "#ba783e", "#e69c4c", "#fbcc74"),
+                    "Trophic Guild" = c("#45681E", "#A3981C", "#CDCA82", "#85B6CE"))
+
     
     plot_ly(traits, x = ~log10(dispersal_km), y = ~log10(Migration_km + 1), 
             z = ~log10(hr.radius), 
