@@ -36,6 +36,13 @@ library(stringr)
 
 traits <- read.csv("../data/Traits_final_cleaned.csv", fileEncoding="latin1")
 
+# colors used throughout
+class_cols <- c(Amphibia = "#4f412b", Aves = "#865a3c", Chondrichthyes = "#ba783e", 
+                Mammalia = "#e69c4c", Reptilia = "#fbcc74")
+
+diet_cols <- c(Carnivore = "#45681e", Herbivore = "#4a9152", 
+                Invertivore = "#64a8a8", Omnivore = "#cde5f9")
+
 ```
 
 
@@ -44,8 +51,6 @@ The code below is used to create Figure 2, which shows the distribution of the d
 
 # Figure 2 top row: group by taxonomic class
 
-class_cols <- c(Amphibia = "#4f412b", Aves = "#865a3c", Chondrichthyes = "#ba783e", 
-                Mammalia = "#e69c4c", Reptilia = "#fbcc74")
 
 class_for_distr <- ggplot(traits, aes(x = class, y = hr.radius)) + 
   geom_violin(aes(color = class, fill = class))  + 
@@ -92,10 +97,7 @@ distr_by_class <- ggarrange(class_for_distr, class_disp_distr, class_mig_distr, 
 
 
 # Figure 2 bottom panel, group by trophic guild
-# [1,] "#362904" "#54450f" "#45681e" "#4a9152" "#64a8a8" "#85b6ce" "#cde5f9" "#eef3ff"
 
-diet_cols <- c(Carnivore = "#45681e", Herbivore = "#4a9152", 
-                Invertivore = "#64a8a8", Omnivore = "#cde5f9")
 
 trophic_for_distr <-  traits %>% 
   filter(diet_broadest_cat != "") %>%
@@ -448,12 +450,12 @@ stat_lineribbon(data = pred_mod_trophic_migration[(pred_mod_trophic_migration$.e
 ```
 
 ```{r render fig 5}
-
-class_figs <- ggarrange(class_foraging_plot, class_dispersal_plot, class_migration_plot, nrow = 1, 
-                       common.legend = T, legend = "right")
-
-diet_figs <- ggarrange(trophic_foraging_plot, trophic_dispersal_plot, trophic_migration_plot, nrow = 1, 
-                       common.legend = T, legend = "right")
+# 
+# class_figs <- ggarrange(class_foraging_plot, class_dispersal_plot, class_migration_plot, nrow = 1, 
+#                        common.legend = T, legend = "right")
+# 
+# diet_figs <- ggarrange(trophic_foraging_plot, trophic_dispersal_plot, trophic_migration_plot, nrow = 1, 
+#                        common.legend = T, legend = "right")
 
 # Get the gtables
 gA <- ggplotGrob(class_foraging_plot)
@@ -475,8 +477,8 @@ gF$widths <- gC$widths
 # Figure5 <- ggarrange(class_figs, diet_figs, nrow=2, common.legend=FALSE)
 
 while (!is.null(dev.list()))  dev.off()
-jpeg(filename = "../figures/Fig5_epreds_01May2023.jpeg", width = 14, height = 7, units = 'in', res = 1000)
-grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 2, padding = 2)
+jpeg(filename = "Fig5_epreds_01May2023.jpeg", width = 14, height = 7, units = 'in', res = 1000)
+grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 3, padding = 2)
 dev.off()
 
 ```
@@ -653,6 +655,9 @@ while (!is.null(dev.list()))  dev.off()
 jpeg(filename = "../figures/trophic_figs_posteriormeans.jpeg", width = 12, height = 3, units = 'in', res = 1000)
 trophic_figs_posterior_means
 dev.off()
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7c181d75036ebebb964d76e1b477ab9f02aaf79d
 
 ```
