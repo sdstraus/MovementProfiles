@@ -655,6 +655,6 @@ while (!is.null(dev.list()))  dev.off()
 jpeg(filename = "../figures/trophic_figs_posteriormeans.jpeg", width = 12, height = 3, units = 'in', res = 1000)
 trophic_figs_posterior_means
 dev.off()
->>>>>>> Stashed changes
+
 
 ```
