@@ -450,16 +450,34 @@ stat_lineribbon(data = pred_mod_trophic_migration[(pred_mod_trophic_migration$.e
 ```{r render fig 5}
 
 class_figs <- ggarrange(class_foraging_plot, class_dispersal_plot, class_migration_plot, nrow = 1, 
-                       common.legend = T, legend = "right", labels = c("d", "e", "f"))
+                       common.legend = T, legend = "right")
 
 diet_figs <- ggarrange(trophic_foraging_plot, trophic_dispersal_plot, trophic_migration_plot, nrow = 1, 
-                       common.legend = T, legend = "right", labels = c("d", "e", "f"))
+                       common.legend = T, legend = "right")
 
-Figure5 <- ggarrange(class_figs, diet_figs, nrow=2, common.legend=FALSE)
+# Get the gtables
+gA <- ggplotGrob(class_foraging_plot)
+gB <- ggplotGrob(class_dispersal_plot)
+gC <- ggplotGrob(class_migration_plot)
+gD <- ggplotGrob(trophic_foraging_plot)
+gE <- ggplotGrob(trophic_dispersal_plot)
+gF <- ggplotGrob(trophic_migration_plot)
+
+
+gA$widths <- gC$widths
+gB$widths <- gC$widths
+gD$widths <- gC$widths
+gE$widths <- gC$widths
+gF$widths <- gC$widths
+  
+
+
+# Figure5 <- ggarrange(class_figs, diet_figs, nrow=2, common.legend=FALSE)
 
 while (!is.null(dev.list()))  dev.off()
-jpeg(filename = "../figures/Fig5_epreds_01May2023.jpeg", width = 12, height = 4.5, units = 'in', res = 1000)
-Figure5
+jpeg(filename = "../figures/Fig5_epreds_01May2023.jpeg", width = 14, height = 7, units = 'in', res = 1000)
+grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 2, padding = 2)
 dev.off()
+
 
 ```
