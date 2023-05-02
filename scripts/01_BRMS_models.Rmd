@@ -281,7 +281,7 @@ class_withyear_prior_migrators <- prior(normal(0,5),class = 'b', coef = logMass_
 
 class.disp_withyear_migrators <- brm(bf_dispersal_class_withyear_migrators, data = traits_migrators, 
                          control = list(adapt_delta = 0.995, max_treedepth=20), 
-                         iter = 3000, cores = 4, prior = class_withyear_prior_migrators)
+                         iter = 4000, cores = 4, prior = class_withyear_prior_migrators)
 
 
 class.for_withyear_migrators <- brm(bf_home_range_class_withyear_migrators, data = traits_migrators, 
@@ -296,6 +296,10 @@ class.mig_withyear_migrators <- brm(bf_migration_class_withyear_migrators, data 
 
 ```
 ```{r save migrator-only class mod}
+saveRDS(class.for_withyear_migrators, "../mods/class.for_withyear_migrators.rds")
+
+saveRDS(class.disp_withyear_migrators, "../mods/class.disp_withyear_migratorss.rds")
+
 saveRDS(class.mig_withyear_migrators, "../mods/class.mig_withyear_migrators.rds")
 
 ```
