@@ -242,3 +242,12 @@ aves.mig_withyear <- brm(bf_migration_class_withyear, data = aves,
 
 #saveRDS(mod4.3_aves, "../mods/mod4.3/mod4.3_aves.rds")
 ```
+
+
+Looking at breakdown of migrators and non-migrators, starting with non-migrators
+```{r non-migrators only, univar with year}
+nonmig <- traits_phylo %>% filter(Migration_km > 0)
+
+
+
+```
