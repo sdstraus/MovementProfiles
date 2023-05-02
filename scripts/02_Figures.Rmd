@@ -653,9 +653,6 @@ while (!is.null(dev.list()))  dev.off()
 jpeg(filename = "../figures/trophic_figs_posteriormeans.jpeg", width = 12, height = 3, units = 'in', res = 1000)
 trophic_figs_posterior_means
 dev.off()
-<<<<<<< HEAD
 
-=======
->>>>>>> 7c181d75036ebebb964d76e1b477ab9f02aaf79d
 
 ```
