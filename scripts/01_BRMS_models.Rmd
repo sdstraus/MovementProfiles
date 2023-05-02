@@ -351,6 +351,12 @@ trophic.mig_withyear_migrators <- brm(bf_migration_trophic_withyear_migrators, d
 
 ```
 
+```{r save trophic migrator only mod]}
+saveRDS(trophic.disp_withyea_migratorsr, "../mods/trophic.disp_withyear_migrators.rds")
+
+```
+
+
 
 Moving on to non-migrators, univariate model, grouped by class
 ```{r migrators only, class univar mod with year}
