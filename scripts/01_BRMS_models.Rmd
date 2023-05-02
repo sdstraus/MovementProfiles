@@ -321,7 +321,7 @@ trophic_year_prior_disp_migrators <- prior(normal(0,5),class = 'b', coef = logMa
 ## works
 trophic.disp_withyea_migratorsr <- brm(bf_dispersal_trophic_withyear_migrators, data = traits_migrators, 
                           control = list(adapt_delta = 0.995, max_treedepth=20), 
-                          iter = 5000, cores = 16,
+                          iter = 3000, cores = 16,
                           prior = trophic_year_prior_disp_migrators)
 
 trophic_year_prior_for_migrators <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
@@ -330,9 +330,9 @@ trophic_year_prior_for_migrators <- prior(normal(0,5),class = 'b', coef = logMas
   prior(student_t(6, 0, 2.9), class = 'sd') +
   prior(student_t(5, 0, 2.9), class = 'sigma')
 
-# works
+
 trophic.for_withyear_migrators <- brm(bf_home_range_trophic_withyear_migrators, data = traits_migrators, 
-                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 5000, cores = 16,
+                         control = list(adapt_delta = 0.995, max_treedepth=20), iter = 3000, cores = 16,
                          prior = trophic_year_prior_for_migrators)
 
 
@@ -348,5 +348,9 @@ trophic.mig_withyear_migrators <- brm(bf_migration_trophic_withyear_migrators, d
                          control = list(adapt_delta = 0.995, max_treedepth=20), iter = 4000, cores = 16,
                          prior = trophic_year_prior_mig_migrators)
 
+
+```
+```{r save trophic migrator only mod}
+saveRDS(trophic.disp_withyea_migratorsr, "../mods/trophic.disp_withyear_migrators.rds")
 
 ```
