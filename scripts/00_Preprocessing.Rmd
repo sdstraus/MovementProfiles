@@ -6,17 +6,16 @@ output: html_document
 ---
 
 ``` {r pull taxonomic classes, include = FALSE}
-source("class_for_sp.R", local = knitr::knit_global())
-source("datelife_tree.R", local = knitr::knit_global())
+# source("class_for_sp.R", local = knitr::knit_global())
+# source("datelife_tree.R", local = knitr::knit_global())
 
 ```
 
 ```{r cleaning columns, include=FALSE}
-#source("code/multiplot.R")
 traits_clean <- read.csv("/Users/sam/github/SUPSmods/data/cleaned_traits.csv", fileEncoding="latin1")
-# 
+
 # ## load phylogeny
-#
+
 one_phylo <- readRDS("/Users/sam/github/SUPSmods/data/final_phylo.rds")
 
 #one_phylo

@@ -658,7 +658,6 @@ pred_mod_trophic_migration_migrators <- traits_migrators %>%
   add_epred_draws(trophic_migration_migrators)
 
 
-
 trophic_foraging_plot_migrators <- ggplot() +
   geom_point(data = traits_migrators, aes(x = Mass_kg, y = log10(hr.radius), color = ordered(diet_broadest_cat))) +
   stat_lineribbon(data = pred_mod_trophic_foraging_migrators, 
@@ -669,8 +668,6 @@ trophic_foraging_plot_migrators <- ggplot() +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   scale_y_continuous(labels = scales::math_format())+
-  # scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
-  #               labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
   ylab("Foraging radius (km)")
@@ -689,8 +686,6 @@ trophic_dispersal_plot_migrators <- ggplot()+
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   scale_y_continuous(labels = scales::math_format())+
-  # scale_y_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
-  #               labels = scales::trans_format("log10", scales::math_format(10^.x)))+
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
   ylab("Dispersal distance (km)")
