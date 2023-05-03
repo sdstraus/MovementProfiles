@@ -517,12 +517,12 @@ stat_lineribbon(data = pred_mod_trophic_migration[(pred_mod_trophic_migration$.e
 ```
 
 ```{r render fig 5}
-
-class_figs <- ggarrange(class_foraging_plot, class_dispersal_plot, class_migration_plot, nrow = 1, 
-                       common.legend = T, legend = "right")
-
-diet_figs <- ggarrange(trophic_foraging_plot, trophic_dispersal_plot, trophic_migration_plot, nrow = 1, 
-                       common.legend = T, legend = "right")
+# 
+# class_figs <- ggarrange(class_foraging_plot, class_dispersal_plot, class_migration_plot, nrow = 1, 
+#                        common.legend = T, legend = "right")
+# 
+# diet_figs <- ggarrange(trophic_foraging_plot, trophic_dispersal_plot, trophic_migration_plot, nrow = 1, 
+#                        common.legend = T, legend = "right")
 
 # Get the gtables
 gA <- ggplotGrob(class_foraging_plot)
@@ -561,26 +561,26 @@ To create Figure S2, modify the code from Figure 5 above using only migratory sp
 traits_migrators <- traits %>% filter(Migration_km > 0)
 
 ## class
-class_dispersal_migrators <- readRDS("../mods/class.for_withyear_migrators.rds")
-class_foraging_migrators <- readRDS("../mods/class.disp_withyear_migrators.rds")
+class_dispersal_migrators <- readRDS("../mods/class.disp_withyear_migrators.rds")
+class_foraging_migrators <- readRDS("../mods/class.for_withyear_migrators.rds")
 class_migration_migrators <- readRDS("../mods/class.mig_withyear_migrators.rds")
 
 
 pred_mod_class_dispersal_migrators <- traits_migrators %>%
   group_by(class) %>%
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 183), 
             dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7)) %>% 
   add_epred_draws(class_dispersal_migrators)
 
 pred_mod_class_foraging_migrators <- traits_migrators %>%
   group_by(class) %>%
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 183), 
             foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7)) %>% 
   add_epred_draws(class_foraging_migrators)
 
 pred_mod_class_migration_migrators <- traits_migrators %>%
   group_by(class) %>%
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 183), 
             migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm=TRUE), by = 7)) %>% 
   add_epred_draws(class_migration_migrators)
 
@@ -599,7 +599,7 @@ class_foraging_plot_migrators <- ggplot() +
   ylab("Foraging radius (km)")
 
 
-class_dispersal_plo_migratorst <- ggplot()+
+class_dispersal_plot_migrators <- ggplot()+
   geom_point(data = traits_migrators, aes(x = Mass_kg, y = log10(dispersal_km), color = ordered(class))) +
   stat_lineribbon(data =pred_mod_class_dispersal_migrators,
                   aes(y = log10(.epred), x = Mass_kg,
@@ -641,19 +641,19 @@ trophic_migration_migrators <- readRDS("../mods/trophic.mig_withyear_migrators.r
 
 pred_mod_trophic_foraging_migrators <- traits_migrators %>%
   group_by(diet_broadest_cat) %>%
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 183), 
             foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7)) %>% 
   add_epred_draws(trophic_foraging_migrators)
 
 pred_mod_trophic_dispersal_migrators <- traits_migrators %>%
   group_by(diet_broadest_cat) %>%
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 183), 
             dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7)) %>% 
   add_epred_draws(trophic_dispersal_migrators)
 
 pred_mod_trophic_migration_migrators <- traits_migrators %>%
   group_by(diet_broadest_cat) %>%
-  data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 183), 
             migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm=TRUE), by = 7)) %>% 
   add_epred_draws(trophic_migration_migrators)
 
@@ -711,6 +711,29 @@ stat_lineribbon(data = pred_mod_trophic_migration_migrators[(pred_mod_trophic_mi
 
 ```
 
+```{r render S2 figs}
+gA <- ggplotGrob(class_foraging_plot_migrators)
+gB <- ggplotGrob(class_dispersal_plot_migrators)
+gC <- ggplotGrob(class_migration_plot_migrators)
+gD <- ggplotGrob(trophic_foraging_plot_migrators)
+gE <- ggplotGrob(trophic_dispersal_plot_migrators)
+gF <- ggplotGrob(trophic_migration_plot_migrators)
+
+
+gA$widths <- gC$widths
+gB$widths <- gC$widths
+gD$widths <- gC$widths
+gE$widths <- gC$widths
+gF$widths <- gC$widths
+  
+
+
+# Figure5 <- ggarrange(class_figs, diet_figs, nrow=2, common.legend=FALSE)
+
+while (!is.null(dev.list()))  dev.off()
+jpeg(filename = "Fig2a_migrators_03May2023.jpeg", width = 10, height = 10, units = 'in', res = 1000)
+grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 3, padding = 2)
+dev.off()
 
 
 
