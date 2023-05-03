@@ -732,8 +732,8 @@ Non-migrators only
 traits_nonmigrators <- traits %>% filter(Migration_km == 0)
 
 ## class
-class_nondispersal_migrators <- readRDS("../mods/class.disp_withyear_nonmigrators.rds")
-class_nonforaging_migrators <- readRDS("../mods/class.for_withyear_nonmigrators.rds")
+class_dispersal_nonmigrators <- readRDS("../mods/class.disp_withyear_nonmigrators.rds")
+class_foraging_nonmigrators <- readRDS("../mods/class.for_withyear_nonmigrators.rds")
 
 
 pred_mod_class_dispersal_nonmigrators <- traits_nonmigrators %>%
@@ -839,7 +839,7 @@ gC$widths <- gB$widths
 gD$widths <- gB$widths
 
 while (!is.null(dev.list()))  dev.off()
-jpeg(filename = "FigS3_nonmigrators_03May2023.jpeg", width = 10, height = 10, units = 'in', res = 1000)
+jpeg(filename = "FigS3_nonmigrators_03May2023.jpeg", width = 10, height = 7, units = 'in', res = 1000)
 grid.arrange(gA, gB, gC, gD, nrow = 2, padding = 2)
 dev.off()
 ```
