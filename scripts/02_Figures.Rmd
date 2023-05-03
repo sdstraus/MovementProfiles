@@ -638,7 +638,6 @@ trophic_foraging_migrators <- readRDS("../mods/trophic.for_withyear_migrators.rd
 trophic_dispersal_migrators <- readRDS("../mods/trophic.disp_withyear_migrators.rds")
 trophic_migration_migrators <- readRDS("../mods/trophic.mig_withyear_migrators.rds")
 
-
 pred_mod_trophic_foraging_migrators <- traits_migrators %>%
   group_by(diet_broadest_cat) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 183), 
@@ -657,7 +656,6 @@ pred_mod_trophic_migration_migrators <- traits_migrators %>%
             migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm=TRUE), by = 7)) %>% 
   add_epred_draws(trophic_migration_migrators)
 
-
 trophic_foraging_plot_migrators <- ggplot() +
   geom_point(data = traits_migrators, aes(x = Mass_kg, y = log10(hr.radius), color = ordered(diet_broadest_cat))) +
   stat_lineribbon(data = pred_mod_trophic_foraging_migrators, 
@@ -671,7 +669,6 @@ trophic_foraging_plot_migrators <- ggplot() +
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
   ylab("Foraging radius (km)")
-
 
 trophic_dispersal_plot_migrators <- ggplot()+
   geom_point(data = traits_migrators, aes(x = Mass_kg, y = log10(dispersal_km), 
@@ -707,8 +704,6 @@ stat_lineribbon(data = pred_mod_trophic_migration_migrators[(pred_mod_trophic_mi
   cowplot::theme_cowplot()+
   xlab("Body mass (kg)")+
   ylab("Migration distance (km)")
-
-
 ```
 
 ```{r render S2 figs}
@@ -719,22 +714,135 @@ gD <- ggplotGrob(trophic_foraging_plot_migrators)
 gE <- ggplotGrob(trophic_dispersal_plot_migrators)
 gF <- ggplotGrob(trophic_migration_plot_migrators)
 
-
 gA$widths <- gC$widths
 gB$widths <- gC$widths
 gD$widths <- gC$widths
 gE$widths <- gC$widths
 gF$widths <- gC$widths
-  
-
-
-# Figure5 <- ggarrange(class_figs, diet_figs, nrow=2, common.legend=FALSE)
 
 while (!is.null(dev.list()))  dev.off()
 jpeg(filename = "Fig2a_migrators_03May2023.jpeg", width = 10, height = 10, units = 'in', res = 1000)
 grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 3, padding = 2)
 dev.off()
+```
 
+Non-migrators only
+
+```{r Fig S3 non-migrators only}
+traits_nonmigrators <- traits %>% filter(Migration_km == 0)
+
+## class
+class_nondispersal_migrators <- readRDS("../mods/class.disp_withyear_nonmigrators.rds")
+class_nonforaging_migrators <- readRDS("../mods/class.for_withyear_nonmigrators.rds")
+
+
+pred_mod_class_dispersal_nonmigrators <- traits_nonmigrators %>%
+  group_by(class) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 137), 
+            dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7)) %>% 
+  add_epred_draws(class_dispersal_nonmigrators)
+
+pred_mod_class_foraging_nonmigrators <- traits_nonmigrators %>%
+  group_by(class) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 137), 
+            foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7)) %>% 
+  add_epred_draws(class_foraging_nonmigrators)
+
+class_foraging_plot_nonmigrators <- ggplot() +
+  geom_point(data = traits_nonmigrators, aes(x = Mass_kg, y = log10(hr.radius), color = ordered(class))) +
+  stat_lineribbon(data = pred_mod_class_foraging_nonmigrators, 
+                  aes(y = log10(.epred), x = Mass_kg, color = ordered(class), fill = ordered(class)), 
+                  .width = c(.95), alpha = 0.4) +
+  scale_color_manual(values = class_cols, name = "Class")+
+  scale_fill_manual(values = class_cols, name = "Class") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")
+
+
+class_dispersal_plot_nonmigrators <- ggplot()+
+  geom_point(data = traits_nonmigrators, aes(x = Mass_kg, y = log10(dispersal_km), color = ordered(class))) +
+  stat_lineribbon(data =pred_mod_class_dispersal_nonmigrators,
+                  aes(y = log10(.epred), x = Mass_kg,
+                      color = ordered(class), fill = ordered(class)),
+                  .width = 0.95, alpha = 0.4)+
+  scale_color_manual(values = class_cols, name = "Class")+
+  scale_fill_manual(values = class_cols, name = "Class") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")
+
+
+## trophic guild
+traits$diet_broadest_cat <- as.factor(traits$diet_broadest_cat)
+
+trophic_foraging_nonmigrators <- readRDS("../mods/trophic.for_withyear_nonmigrators.rds")
+trophic_dispersal_nonmigrators <- readRDS("../mods/trophic.disp_withyear_nonmigrators.rds")
+
+pred_mod_trophic_foraging_nonmigrators <- traits_nonmigrators %>%
+  group_by(diet_broadest_cat) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 137), 
+            foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7)) %>% 
+  add_epred_draws(trophic_foraging_nonmigrators)
+
+pred_mod_trophic_dispersal_nonmigrators <- traits_nonmigrators %>%
+  group_by(diet_broadest_cat) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 137), 
+            dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7)) %>% 
+  add_epred_draws(trophic_dispersal_nonmigrators)
+
+
+trophic_foraging_plot_nonmigrators <- ggplot() +
+  geom_point(data = traits_nonmigrators, aes(x = Mass_kg, y = log10(hr.radius), color = ordered(diet_broadest_cat))) +
+  stat_lineribbon(data = pred_mod_trophic_foraging_nonmigrators, 
+                  aes(y = log10(.epred), x = Mass_kg, color = ordered(diet_broadest_cat), fill = ordered(diet_broadest_cat)), 
+                  .width = c(.95), alpha = 0.4) +
+  scale_color_manual(values = diet_cols, name = "Trophic Guild")+
+  scale_fill_manual(values = diet_cols, name = "Trophic Guild") +
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")
+
+trophic_dispersal_plot_nonmigrators <- ggplot()+
+  geom_point(data = traits_nonmigrators, aes(x = Mass_kg, y = log10(dispersal_km), 
+                                color = ordered(diet_broadest_cat))) +
+  stat_lineribbon(data = pred_mod_trophic_dispersal_nonmigrators,
+                  aes(y = log10(.epred), x = Mass_kg,
+                      color = ordered(diet_broadest_cat), 
+                      fill = ordered(diet_broadest_cat)),
+                  .width = 0.95, alpha = 0.4)+
+  scale_color_manual(values = diet_cols, name = "Trophic Guild")+
+  scale_fill_manual(values = diet_cols, name = "Trophic Guild") +
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")
+
+gA <- ggplotGrob(class_foraging_plot_nonmigrators)
+gB <- ggplotGrob(class_dispersal_plot_nonmigrators)
+gC <- ggplotGrob(trophic_foraging_plot_nonmigrators)
+gD <- ggplotGrob(trophic_dispersal_plot_nonmigrators)
+
+gA$widths <- gB$widths
+gC$widths <- gB$widths
+gD$widths <- gB$widths
+
+while (!is.null(dev.list()))  dev.off()
+jpeg(filename = "FigS3_nonmigrators_03May2023.jpeg", width = 10, height = 10, units = 'in', res = 1000)
+grid.arrange(gA, gB, gC, gD, nrow = 2, padding = 2)
+dev.off()
+```
 
 
 Class posterior means, generated for Figure S4
