@@ -208,10 +208,10 @@ class_multivar <- brm(bf_dispersal_class_withyear + bf_home_range_class_withyear
 
 saveRDS(class_multivar, "../mods/class_multivar_withyear.rds")
 
-````
+```
 
 
-For supplemental Figure S1: univariate models by order. First separate out orders
+For supplemental Figure S1: univariate models by order. Separate out orders, aves first.
 
 ```{r Order-aves-withyear}
 aves <- traits_phylo %>% filter(class == "Aves")
@@ -219,7 +219,7 @@ aves <- traits_phylo %>% filter(class == "Aves")
 bf_dispersal_aves_withyear <- bf(dispersal_km ~ log(Mass_kg) + 
                       (log(Mass_kg)|p|order) + dispersal_year) + lognormal()
 bf_home_range_aves_withyear <- bf(hr.radius ~ log(Mass_kg)+ 
-                      (log(Mass_kg)|p|order()) + foraging_year) +  lognormal()
+                      (log(Mass_kg)|p|order) + foraging_year) +  lognormal()
 bf_migration_aves_withyear <- bf(Migration_km ~ log(Mass_kg) + 
                       (log(Mass_kg)|p|order) + migration_year) + hurdle_lognormal()
 
@@ -228,20 +228,66 @@ order_withyear_prior <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
   prior(student_t(6, 0, 2.9), class = 'sd') +
   prior(student_t(4, 0, 2.9), class = 'sigma')
 
-aves.disp_withyear <- brm(bf_dispersal_class_withyear, data = aves, 
+aves.disp_withyear <- brm(bf_dispersal_aves_withyear, data = aves, 
                          control = list(adapt_delta = 0.995, max_treedepth=20), 
                          iter = 7000, cores = 4, prior = order_withyear_prior)
 
-aves.for_withyear <- brm(bf_home_range_class_withyear, data = aves, 
+aves.for_withyear <- brm(bf_home_range_aves_withyear, data = aves, 
                         control = list(adapt_delta = 0.995, max_treedepth=20), 
                         iter = 3000, cores = 4, prior = order_withyear_prior)
 
-aves.mig_withyear <- brm(bf_migration_class_withyear, data = aves, 
+aves.mig_withyear <- brm(bf_migration_aves_withyear, data = aves, 
                         control = list(adapt_delta = 0.995, max_treedepth=20), 
                         iter = 3000, cores = 4, prior = order_withyear_prior)
 
-#saveRDS(mod4.3_aves, "../mods/mod4.3/mod4.3_aves.rds")
+
+# saveRDS(aves.disp_withyear, "../mods/aves.disp_withyear.rds")
+# saveRDS(aves.for_withyear, "../mods/aves.for_withyear.rds")
+# saveRDS(aves.mig_withyear, "../mods/aves.mig_withyear.rds") 
+
 ```
+
+mammals next
+```{r Order-mammals-withyear}
+mam <- traits_phylo %>% filter(class == "Mammalia")
+
+bf_dispersal_mam_withyear <- bf(dispersal_km ~ log(Mass_kg) + 
+                      (log(Mass_kg)|p|order) + dispersal_year) + lognormal()
+bf_home_range_mam_withyear <- bf(hr.radius ~ log(Mass_kg)+ 
+                      (log(Mass_kg)|p|order) + foraging_year) +  lognormal()
+bf_migration_mam_withyear <- bf(Migration_km ~ log(Mass_kg) + 
+                      (log(Mass_kg)|p|order) + migration_year) + hurdle_lognormal()
+
+order_withyear_prior <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
+  prior(student_t(4, 0, 4), class = 'Intercept') +
+  prior(student_t(6, 0, 2.9), class = 'sd') +
+  prior(student_t(4, 0, 2.9), class = 'sigma')
+
+mam.disp_withyear <- brm(bf_dispersal_mam_withyear, data = mam, 
+                         control = list(adapt_delta = 0.995, max_treedepth=20), 
+                         iter = 3000, cores = 4, prior = order_withyear_prior)
+
+mam.for_withyear <- brm(bf_home_range_mam_withyear, data = mam, 
+                        control = list(adapt_delta = 0.995, max_treedepth=20), 
+                        iter = 3000, cores = 4, prior = order_withyear_prior)
+
+order_withyear_prior_mam <- prior(normal(0,6),class = 'b', coef = logMass_kg) +
+  prior(student_t(3, 0, 6), class = 'Intercept') +
+  prior(student_t(3, 0, 5), class = 'sd') +
+  prior(student_t(3, 0, 5), class = 'sigma')
+
+mam.mig_withyear <- brm(bf_migration_mam_withyear, data = mam, 
+                        control = list(adapt_delta = 0.995, max_treedepth=20), 
+                        iter = 3000, cores = 4, prior = order_withyear_prior_mam)
+
+
+# saveRDS(mam.disp_withyear, "../mods/mam.disp_withyear.rds")
+# saveRDS(mam.for_withyear, "../mods/mam.for_withyear.rds")
+# saveRDS(mam.mig_withyear, "../mods/mam.mig_withyear.rds") 
+
+```
+
+
 
 
 Looking at breakdown of migrators and non-migrators, starting with migrators, univariate model.
