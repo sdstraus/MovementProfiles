@@ -241,7 +241,7 @@ dev.off()
 
 ```
 
-Create PCA plots for class and trophic guild. We plotted the standardized mass and movement values for three movement types, and also the residual of movement distance ~ body mass for each type.
+Create PCA plots for class and trophic guild. We plotted the standardized mass and movement values for three movement types, and also the residual of movement distance ~ body mass for each type. This chode chunk also pulls PCA loadings, presented in the results section and Table S2.
 
 ```{r PCA plots}
 
@@ -550,73 +550,92 @@ dev.off()
 
 ```
 
+From here on out, code chunks are used to generate the figures and tables presented in the supplemental materials.
+
+Figure S1. TBD
+
+
+To create Figure S2, modify the code from Figure 5 above using only migratory species.
+```{r Fig S2 migrators only}
+
+
+
+
+```
+
 Class posterior means, generated for Figure S4
 
 ```{r Fig S4 - class posterior means}
-# class_dispersal <- readRDS("../mods/class.disp_withyear.rds")
-# class_foraging <- readRDS("../mods/class.for_withyear.rds")
-# class_migration <- readRDS("../mods/class.mig_withyear.rds")
+class_dispersal_migrators <- readRDS("../mods/class.disp_withyear_migrators.rds")
+class_foraging_migrators <- readRDS("../mods/class.for_withyear_migrators.rds")
+class_migration_migrators <- readRDS("../mods/class.mig_withyear_migrators.rds")
 
-grid_foraging <-  traits %>%
+traits_migrators <- traits_phylo %>% filter(Migration_km > 0)
+
+
+grid_foraging_migrators <-  traits_migrators %>%
   group_by(class) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
             foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7))
 
-grid_dispersal <-  traits %>%
+grid_dispersal_migrators <-  traits_migrators %>%
   group_by(class) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
             dispersal_year = seq(min(dispersal_year, na.rm = TRUE), max(dispersal_year, na.rm = TRUE), by = 7))
 
-grid_migration <-  traits %>%
+grid_migration_migrators <-  traits_migrators %>%
   group_by(class) %>%
   data_grid(Mass_kg = seq_range(Mass_kg, n = 320), 
             migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm = TRUE), by = 7))
 # foraging
-means_foraging <-  grid_foraging %>%
-  add_epred_draws(class_foraging)
+means_foraging_migrators <-  grid_foraging_migrators %>%
+  add_epred_draws(class_foraging_migrators)
 
-preds_foraging <-  grid_foraging %>%
-  add_predicted_draws(class_foraging)
+preds_foraging_migrators <-  grid_foraging_migrators %>%
+  add_predicted_draws(class_foraging_migrators)
 
 #dispersal
-means_dispersal <-  grid_dispersal %>%
-  add_epred_draws(class_dispersal)
+means_dispersal_migrators <-  grid_dispersal_migrators %>%
+  add_epred_draws(class_dispersal_migrators)
 
-preds_dispersal <-  grid_dispersal %>%
-  add_predicted_draws(class_dispersal)
+preds_dispersal_migrators <-  grid_dispersal_migrators %>%
+  add_predicted_draws(class_dispersal_migrators)
 
 #migration
-means_migration <-  grid_migration %>%
-  add_epred_draws(class_migration)
+means_migration_migrators <-  grid_migration_migrators %>%
+  add_epred_draws(class_migration_migrators)
 
-preds_migration <-  grid_migration %>%
-  add_predicted_draws(class_migration)
+preds_migration_migrators <-  grid_migration_migrators %>%
+  add_predicted_draws(class_migration_migrators)
 
 
-class_for <- traits %>%
+class_for_migrators <- traits_migrators %>%
   ggplot(aes(y = class, x = log10(hr.radius))) +
-  stat_interval(aes(x = log10(.prediction)), data = preds_dispersal[(preds_dispersal$.prediction>0),]) +
-  stat_pointinterval(aes(x = log10(.epred)), data = means_foraging[(means_foraging$.epred>0),], .width = c(.66, .95), position = position_nudge(y = -0.3)) +
+  stat_interval(aes(x = log10(.prediction)), data = preds_dispersal_migrators[(preds_dispersal_migrators$.prediction>0),]) +
+  stat_pointinterval(aes(x = log10(.epred)), data = means_foraging_migrators[(means_foraging_migrators$.epred>0),], .width = c(.66, .95), position = position_nudge(y = -0.3)) +
   geom_point() +
   scale_color_brewer()+
   cowplot::theme_cowplot()+
   labs(y = "Taxonomic class")
 
-class_disp <- traits %>%
+class_disp_migrators <- traits_migrators %>%
   ggplot(aes(y = class, x = log10(dispersal_km))) +
-  stat_interval(aes(x = log10(.prediction)), data = preds_dispersal[(preds_dispersal$.prediction>0),]) +
-  stat_pointinterval(aes(x = log10(.epred)), data = means_dispersal[(means_dispersal$.epred>0),], .width = c(.66, .95), position = position_nudge(y = -0.3)) +
+  stat_interval(aes(x = log10(.prediction)), 
+                data = preds_dispersal_migrators[(preds_dispersal_migrators$.prediction>0),]) +
+  stat_pointinterval(aes(x = log10(.epred)), 
+                     data = means_dispersal_migrators[(means_dispersal_migrators$.epred>0),], 
+                     .width = c(.66, .95), position = position_nudge(y = -0.3)) +
   geom_point() +
   scale_color_brewer()+
   cowplot::theme_cowplot()+
   labs(y = "Taxonomic class")
 
-class_mig <- traits %>%
+class_mig_migrators <- traits_migrators %>%
   ggplot(aes(y = class, x = log10(Migration_km))) +
   stat_interval(aes(x = log10(.prediction)), 
-                data = preds_migration[(preds_migration$.prediction>0),]) +
+                data = preds_migration_migrators[(preds_migration_migrators$.prediction>0),]) +
   stat_pointinterval(aes(x = log10(.epred)), 
-                     data = means_migration[(means_migration$.epred>0),], 
+                     data = means_migration_migrators[(means_migration_migrators$.epred>0),], 
                      .width = c(.66, .95), position = position_nudge(y = -0.3)) +
   geom_point() +
   scale_color_brewer()+
@@ -625,12 +644,12 @@ class_mig <- traits %>%
 
 
 
-class_figs_posterior_means <- ggarrange(class_for, class_disp, class_mig, nrow = 1, 
+class_figs_posterior_means <- ggarrange(class_for_migrators, class_disp_migrators, class_mig_migrators, nrow = 1, 
                         common.legend = T, legend = "right", labels = c("a", "b", "c"))
 
 
 while (!is.null(dev.list()))  dev.off()
-jpeg(filename = "../figures/class_figs_posteriormeans.jpeg", width = 12, height = 3, units = 'in', res = 1000)
+jpeg(filename = "../figures/class_figs__migrators_May2023.jpeg", width = 12, height = 3, units = 'in', res = 1000)
 class_figs_posterior_means
 dev.off()
 ```
@@ -728,7 +747,7 @@ dev.off()
 
 Posterior mean slope distributions, as per reviewer suggestion from EcoLetts, grouped by class.
 
-```{r posterior mean slopes by class}
+```{r Fig S5 posterior mean slopes by class}
 # class_dispersal <- readRDS("../mods/class.disp_withyear.rds")
 # class_foraging <- readRDS("../mods/class.for_withyear.rds")
 # class_migration <- readRDS("../mods/class.mig_withyear.rds")
@@ -804,7 +823,7 @@ dev.off()
 Posterior mean slope distributions, as per reviewer suggestion from EcoLetts, grouped by trophic guild.
 
 
-```{r posterior mean slopes by trophic guild}
+```{r Fig S6 posterior mean slopes by trophic guild}
 # trophic_foraging <- readRDS("../mods/trophic.for_withyear.rds")
 # trophic_dispersal <- readRDS("../mods/trophic.disp_withyear.rds")
 # trophic_migration <- readRDS("../mods/trophic.mig_withyear.rds")
@@ -878,6 +897,9 @@ dev.off()
 
 ```
 
+
+
+Code to create covariance matrices and contingency tables, presented in Fig 3c and Tables S1, S3-S4
 ```{r Covariance matrix and contingency table S1}
 class_diet <- table(traits$class, traits$diet_broadest_cat)
 chisq.test(class_diet, simulate.p.value = TRUE, B = 10000)
