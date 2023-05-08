@@ -552,7 +552,181 @@ dev.off()
 
 From here on out, code chunks are used to generate the figures and tables presented in the supplemental materials.
 
-Figure S1. TBD
+Figure S1. Top panel, birds
+```{r Fig S1 birds}
+aves <- traits %>% filter(class == "Aves")
+
+
+aves_dispersal <- readRDS("../mods/aves.disp_withyear.rds")
+aves_foraging <- readRDS("../mods/aves.for_withyear.rds")
+aves_migration <- readRDS("../mods/aves.mig_withyear.rds")
+
+
+pred_mod_order_dispersal_aves <- aves %>%
+  group_by(order) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 159), 
+            dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7)) %>% 
+  add_epred_draws(aves_dispersal)
+
+pred_mod_order_foraging_aves <- aves %>%
+  group_by(order) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 159), 
+            foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7)) %>% 
+  add_epred_draws(aves_foraging)
+
+pred_mod_order_migration_aves <- aves %>%
+  group_by(order) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 159), 
+            migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm=TRUE), by = 7)) %>% 
+  add_epred_draws(aves_migration)
+
+aves_foraging_plot <- ggplot() +
+  geom_point(data = aves, aes(x = Mass_kg, y = log10(hr.radius), color = ordered(order))) +
+  stat_lineribbon(data = pred_mod_order_foraging_aves, 
+                  aes(y = log10(.epred), x = Mass_kg, color = ordered(order), fill = ordered(order)), 
+                  .width = c(.95), alpha = 0.4) +
+  # scale_color_manual(values = class_cols, name = "Order")+
+  # scale_fill_manual(values = class_cols, name = "Order") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")+
+  labs(fill = "Order", color = "Order")
+
+
+aves_dispersal_plot <- ggplot()+
+  geom_point(data = aves, aes(x = Mass_kg, y = log10(dispersal_km), color = ordered(order))) +
+  stat_lineribbon(data =pred_mod_order_dispersal_aves,
+                  aes(y = log10(.epred), x = Mass_kg,
+                      color = ordered(order), fill = ordered(order)),
+                  .width = 0.95, alpha = 0.4)+
+  # scale_color_manual(values = class_cols, name = "Order")+
+  # scale_fill_manual(values = class_cols, name = "Order") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")+
+  labs(fill = "Order", color = "Order")
+
+
+aves_migration_plot <- ggplot() +
+  geom_point(data = aves, aes(x = Mass_kg, y = log10(Migration_km), color = ordered(order))) +
+  stat_lineribbon(data = pred_mod_order_migration_aves, 
+                  aes(y = log10(.epred), x = Mass_kg, color = ordered(order),fill =ordered(order)), 
+                  .width = c(.95), alpha = 0.4) +
+  # scale_color_manual(values = class_cols, name = "Order")+
+  # scale_fill_manual(values = class_cols, name = "Order") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Migration distance (km)")+
+  labs(fill = "Order", color = "Order")
+
+
+gA <- ggplotGrob(aves_foraging_plot)
+gB <- ggplotGrob(aves_dispersal_plot)
+gC <- ggplotGrob(aves_migration_plot)
+
+
+while (!is.null(dev.list()))  dev.off()
+jpeg(filename = "../figures/aves_order_05May2023.jpeg", width = 16, height = 4, units = 'in', res = 1000)
+grid.arrange(gA, gB, gC, nrow = 1, padding = 2)
+dev.off()
+```
+
+
+Figure S1. Bottom panel, mammals
+```{r Fig S1 mammals}
+mam <- traits %>% filter(class == "Mammalia")
+
+
+mam_dispersal <- readRDS("../mods/mam.disp_withyear.rds")
+mam_foraging <- readRDS("../mods/mam.for_withyear.rds")
+mam_migration <- readRDS("../mods/mam.mig_withyear.rds")
+
+
+pred_mod_order_dispersal_mam <- mam %>%
+  group_by(order) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 115), 
+            dispersal_year = seq(min(dispersal_year), max(dispersal_year), by = 7)) %>% 
+  add_epred_draws(mam_dispersal)
+
+pred_mod_order_foraging_mam <- mam %>%
+  group_by(order) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 115), 
+            foraging_year = seq(min(foraging_year, na.rm = TRUE), max(foraging_year, na.rm = TRUE), by = 7)) %>% 
+  add_epred_draws(mam_foraging)
+
+pred_mod_order_migration_mam <- mam %>%
+  group_by(order) %>%
+  data_grid(Mass_kg = seq_range(Mass_kg, n = 115), 
+            migration_year = seq(min(migration_year, na.rm = TRUE), max(migration_year, na.rm=TRUE), by = 7)) %>% 
+  add_epred_draws(mam_migration)
+
+mam_foraging_plot <- ggplot() +
+  geom_point(data = mam, aes(x = Mass_kg, y = log10(hr.radius), color = ordered(order))) +
+  stat_lineribbon(data = pred_mod_order_foraging_mam, 
+                  aes(y = log10(.epred), x = Mass_kg, color = ordered(order), fill = ordered(order)), 
+                  .width = c(.95), alpha = 0.4) +
+  # scale_color_manual(values = class_cols, name = "Order")+
+  # scale_fill_manual(values = class_cols, name = "Order") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Foraging radius (km)")+
+  labs(fill = "Order", color = "Order")
+
+
+mam_dispersal_plot <- ggplot()+
+  geom_point(data = mam, aes(x = Mass_kg, y = log10(dispersal_km), color = ordered(order))) +
+  stat_lineribbon(data =pred_mod_order_dispersal_mam,
+                  aes(y = log10(.epred), x = Mass_kg,
+                      color = ordered(order), fill = ordered(order)),
+                  .width = 0.95, alpha = 0.4)+
+  # scale_color_manual(values = class_cols, name = "Order")+
+  # scale_fill_manual(values = class_cols, name = "Order") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Dispersal distance (km)")+
+  labs(fill = "Order", color = "Order")
+
+
+mam_migration_plot <- ggplot() +
+  geom_point(data = mam, aes(x = Mass_kg, y = log10(Migration_km), color = ordered(order))) +
+  stat_lineribbon(data = pred_mod_order_migration_mam, 
+                  aes(y = log10(.epred), x = Mass_kg, color = ordered(order),fill =ordered(order)), 
+                  .width = c(.95), alpha = 0.4) +
+  # scale_color_manual(values = class_cols, name = "Order")+
+  # scale_fill_manual(values = class_cols, name = "Order") + 
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x)))+
+  scale_y_continuous(labels = scales::math_format())+
+  cowplot::theme_cowplot()+
+  xlab("Body mass (kg)")+
+  ylab("Migration distance (km)")+
+  labs(fill = "Order", color = "Order")
+
+gA <- ggplotGrob(mam_foraging_plot)
+gB <- ggplotGrob(mam_dispersal_plot)
+gC <- ggplotGrob(mam_migration_plot)
+
+
+while (!is.null(dev.list()))  dev.off()
+jpeg(filename = "../figures/mam_order_05May2023.jpeg", width = 16, height = 4, units = 'in', res = 1000)
+grid.arrange(gA, gB, gC, nrow = 1, padding = 2)
+dev.off()
+```
 
 
 To create Figure S2, modify the code from Figure 5 above using only migratory species.
