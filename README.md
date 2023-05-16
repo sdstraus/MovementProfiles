@@ -1,5 +1,8 @@
 ## **Data and code used to conduct analyses and generate figures presented in *Macroecological constraints on species' 'movement profiles': body mass does not explain it all***
 
+[![DOI](https://zenodo.org/badge/296414476.svg)](https://zenodo.org/badge/latestdoi/296414476)
+
+
 #### in alphabetical order, this repository contains the following files and subfolders:
 
 -   `3D-app/` - this folder contains data and code used to generate the shiny app of an interactive 3D plot presented in Figure 3 of the manuscript
