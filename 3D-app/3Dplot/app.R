@@ -1,11 +1,11 @@
 library(shiny)
 library(plotly)
-
+setwd("3D-app/3Dplot")
 
 ui <-  fluidPage(
     titlePanel("Movement at three scales"),
     sidebarLayout(
-        sidebarPanel(em("Straus et al., 2022, Macroecological variation in movement profiles: body size does not explain it all, for submission to Global Ecology and Biogeography")
+        sidebarPanel(em("Straus et al., 2022, Macroecological constraints on species’ ‘movement profiles’: body mass does not explain it all, for submission to Global Ecology and Biogeography")
         ),
         mainPanel(
             p("Figure 3. log10-transformed movement types on 3-axes for 321 species. 

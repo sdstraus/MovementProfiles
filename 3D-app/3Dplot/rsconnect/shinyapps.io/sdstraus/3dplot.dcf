@@ -5,9 +5,9 @@ account: sdstraus
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4589432
-bundleId: 7164494
+bundleId: 7223991
 url: https://sdstraus.shinyapps.io/3dplot/
-when: 1683043054.74676
-lastSyncTime: 1683043054.74677
+when: 1684233924.0678
+lastSyncTime: 1684233924.06782
 asMultiple: FALSE
 asStatic: FALSE

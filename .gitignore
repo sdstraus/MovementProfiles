@@ -6,3 +6,8 @@
 figures/
 mods/pre_GEBrevisions
 data/.DS_Store
+data/defunct/
+3D-app/3Dplot.html
+3D-app/3Dplot/.RData
+3D-app/3Dplot/.Rhistory
+3D-app/3Dplot/rsconnect/
