@@ -1,0 +1,63 @@
+---
+title: "Phylo Script"
+author: "Sam Straus"
+date: "2023-07-23"
+output: html_document
+---
+
+
+```{r load packages and data}
+library(brms)
+library(stringr)
+library(dplyr)
+library(rstan)
+library(ape)
+
+### load traits
+traits_phylo <- read.csv("../data/Traits_final_cleaned.csv", fileEncoding="latin1")
+one_phylo <- readRDS("../data/final_phylo.rds")
+
+
+A <- ape::vcv.phylo(one_phylo)
+```
+
+
+
+```{r univariate phylo mods}
+
+bf_dispersal_phylo_withyear <- bf(dispersal_km ~ log(Mass_kg) + 
+                      (1|gr(scientific_name.x, cov = A)) + dispersal_year) + lognormal()
+bf_home_range_phylo_withyear <- bf(hr.radius ~ log(Mass_kg)+ 
+                      (1|gr(scientific_name.x, cov = A))  + foraging_year) +  lognormal()
+bf_migration_phylo_withyear <- bf(Migration_km ~ log(Mass_kg) + 
+                      (1|gr(scientific_name.x, cov = A))  + migration_year) + hurdle_lognormal()
+
+phylo_withyear_prior_migrators <- prior(normal(0,5),class = 'b', coef = logMass_kg) +
+  prior(student_t(4, 0, 4), class = 'Intercept') +
+  prior(student_t(6, 0, 2.9), class = 'sd') +
+  prior(student_t(4, 0, 2.9), class = 'sigma')
+
+phylo_disp_withyear_migrators <- brm(bf_dispersal_phylo_withyear, data = traits_phylo, 
+                         control = list(adapt_delta = 0.995, max_treedepth=20), data2 = list(A=A),
+                         iter = 200, cores = 4, prior = phylo_withyear_prior_migrators)
+
+
+phylo_for_withyear_migrators <- brm(bf_home_range_phylo_withyear, data = traits_phylo, 
+                        control = list(adapt_delta = 0.995, max_treedepth=20), data2 = list(A=A)
+                        iter = 3000, cores = 4, prior = phylo_withyear_prior_migrators)
+
+
+phylo_mig_withyear_migrators <- brm(bf_migration_phylo_withyear, data = traits_migrators, 
+                        control = list(adapt_delta = 0.995, max_treedepth=20), data2 = list(A=A), 
+                        iter = 3000, cores = 4, prior = phylo_withyear_prior_migrators)
+
+```
+
+```{r save phylo mods}
+saveRDS(phylo_disp_withyear_migrators, "../mods/phylo_disp_withyear_migrators.rds")
+
+saveRDS(phylo_for_withyear_migrators, "../mods/phylo_for_withyear_migrators.rds")
+
+saveRDS(phylo_mig_withyear_migrators, "../mods/phylo_mig_withyear_migrators.rds")
+
+```

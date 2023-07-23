@@ -1,6 +1,6 @@
 # README
 
-## Data used in the analysis of ***Macroecological constraints on species\' \'movement profiles\': body mass does not explain it all***
+## Data used in the analysis of ***Macroecological constraints on species' 'movement profiles': body mass does not explain it all***
 
 #### in alphabetical order, with data dictionaries:
 
@@ -15,7 +15,7 @@
 **Description of:** cleaned_traits.csv - raw data of movement types per species
 
 | Column Name              | Description                                            |
-|------------------------------------|------------------------------------|
+|--------------------------|--------------------------------------------------------|
 | scientific_name.x        | Full scientific name in the format *Genus species*     |
 | collapsed_name           | Scientific name in the format *Genusspecies*           |
 | dispersal_km             | dispersal distance in kilometers                       |
@@ -56,7 +56,7 @@
 **Description of:** `Traits_final_cleaned.csv` - final file used for data analysis, created in `00_Preprocessing.Rmd`. In column headers, home range = foraging
 
 | Column Name           | Description                                                                                                                          |
-|---------------|---------------------------------------------------------|
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | scientific_name.x     | Full scientific name in the format *Genus_species*                                                                                   |
 | dispersal_km          | dispersal distance in km                                                                                                             |
 | Migration_km          | migration distance in km                                                                                                             |
