@@ -512,4 +512,34 @@ phylo_mig_withyear_migrators <- brm(bf_migration_class_withyear_migrators, data 
                         control = list(adapt_delta = 0.995, max_treedepth=20), 
                         iter = 3000, cores = 4, prior = phylo_withyear_prior_migrators)
 
+phylo_for_withyear <- readRDS("../mods/phylo_for_withyear_migrators.rds")
+phylo_disp_withyear <- readRDS("../mods/phylo_disp_withyear_migrators.rds")
+phylo_mig_withyear <- readRDS("../mods/phylo_mig_withyear_migrators.rds")
+
+summary(phylo_for_withyear)
+
+class_for_withyear <- readRDS("../mods/class.for_withyear.rds")
+class_disp_withyear <- readRDS("../mods/class.disp_withyear.rds")
+class_mig_withyear <- readRDS("../mods/class.mig_withyear.rds")
+
+loo(phylo_for_withyear,class_for_withyear)
+# Model comparisons:
+#                    elpd_diff se_diff
+# phylo_for_withyear   0.0       0.0    55.1		
+# class_for_withyear -15.4       5.6    85.9		
+
+loo(phylo_disp_withyear,class_disp_withyear)
+# Model comparisons:
+#                     elpd_diff se_diff looic
+# phylo_disp_withyear   0.0       0.0  2554.2
+# class_disp_withyear -20.0       6.2  2594.2
+
+
+loo(phylo_mig_withyear,class_mig_withyear)
+
+# Model comparisons:
+#                     elpd_diff se_diff   looic
+# phylo_disp_withyear   0.0       0.0     2966.2
+# class_disp_withyear -20.0       6.2     3016.3
+
 ```
