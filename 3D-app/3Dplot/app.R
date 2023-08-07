@@ -1,11 +1,11 @@
 library(shiny)
 library(plotly)
-setwd("3D-app/3Dplot")
+# setwd("3D-app/3Dplot")
 
 ui <-  fluidPage(
     titlePanel("Movement at three scales"),
     sidebarLayout(
-        sidebarPanel(em("Straus et al., 2022, Macroecological constraints on species’ ‘movement profiles’: body mass does not explain it all, for submission to Global Ecology and Biogeography")
+        sidebarPanel(em("Straus et al., 2023, Macroecological constraints on species’ ‘movement profiles’: body mass does not explain it all, for submission to Global Ecology and Biogeography")
         ),
         mainPanel(
             p("Figure 3. log10-transformed movement types on 3-axes for 321 species. 
@@ -36,10 +36,11 @@ server <- function(input, output){
                     "Trophic Guild" = traits$diet_broadest_cat)
     
     color <- switch(input$var,
-                    "Media" = c("#41476b", "#9e6374", "#c67b6f", "#de9b71"),
-                    "Class" = c("#4f412b", "#865a3c", "#ba783e", "#e69c4c", "#fbcc74"),
-                    "Trophic Guild" = c("#45681E", "#A3981C", "#CDCA82", "#85B6CE"))
-
+                    "Media" = c("#45681E", "#A3981C", "#CDCA82", "#85B6CE"),
+                    "Class" = c(Amphibia = "#00496f", Aves = "#0f85a0", Chondrichthyes = "#edd746", 
+                                Mammalia = "#ed8b00", Reptilia = "#dd4124"),
+                    "Trophic Guild" = c(Carnivore = "#4a3a3b", Herbivore = "#984136", 
+                                        Invertivore = "#c26a7a", Omnivore = "#ecc0a1"))
     
     plot_ly(traits, x = ~log10(dispersal_km), y = ~log10(Migration_km + 1), 
             z = ~log10(hr.radius), 

@@ -29,10 +29,10 @@ library(viridis) # color palettes
 library(RColorBrewer) # color palettes
 
 # for plotting fig 4
-#library(vegan) ## for PCA
-#library(devtools) # to install ggbiplot from github
-#install_github("vqv/ggbiplot")
-#library(ggbiplot) ## for PCA
+library(vegan) ## for PCA
+# library(devtools) # to install ggbiplot from github
+# install_github("vqv/ggbiplot")
+library(ggbiplot) ## for PCA
 
 # for plotting fig 5
 library(tidybayes)
@@ -43,11 +43,11 @@ library(stringr)
 traits <- read.csv("../data/Traits_final_cleaned.csv", fileEncoding="latin1")
 
 # colors used throughout
-class_cols <- c(Amphibia = "#4f412b", Aves = "#865a3c", Chondrichthyes = "#ba783e", 
-                Mammalia = "#e69c4c", Reptilia = "#fbcc74")
+class_cols <- c(Amphibia = "#00496f", Aves = "#0f85a0", Chondrichthyes = "#edd746", 
+                Mammalia = "#ed8b00", Reptilia = "#dd4124")
 
-diet_cols <- c(Carnivore = "#45681E", Herbivore = "#A3981C", 
-                Invertivore = "#CDCA82", Omnivore = "#85B6CE")
+diet_cols <- c(Carnivore = "#4a3a3b", Herbivore = "#984136", 
+                Invertivore = "#c26a7a", Omnivore = "#ecc0a1")
 
 ```
 
@@ -148,16 +148,16 @@ The code below is used to create Figure 2, which shows the distribution of the d
 
 # Figure 2 top row: group by movement medium
 # this is only used once, so assigning colors here rather than in chunk 1
-media_cols <- c(air = "#41476b", land = "#9e6374", freshwater = "#c67b6f", marine = "#de9b71")
+media_cols <- c(air = "#fbcc74", land = "#ba783e", water = "#4f412b")
 
 
 # hist by media
-traits$media_foraging[which(traits$media_foraging =="water")] <- "freshwater"
-traits$media_foraging[which(traits$media_foraging =="aquatic")] <- "freshwater"
+traits$media_foraging[which(traits$media_foraging =="marine")] <- "water"
+traits$media_foraging[which(traits$media_foraging =="aquatic")] <- "water"
 
 media_for_distr <- traits %>%
   filter(media_foraging == "air" | media_foraging == "land" |
-           media_foraging == "freshwater"| media_foraging == "marine") %>%
+           media_foraging == "water") %>%
   ggplot(aes(x = media_foraging, y = hr.radius))+
     geom_violin(aes(color = media_foraging, fill = media_foraging))  + 
   geom_boxplot(width = 0.2)+
@@ -171,12 +171,12 @@ media_for_distr <- traits %>%
   theme(axis.title.x=element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
   theme(legend.position = "none")
 
-traits$media_dispersal[which(traits$media_dispersal =="water")] <- "freshwater"
-traits$media_foraging[which(traits$media_foraging =="aquatic")] <- "freshwater"
+traits$media_dispersal[which(traits$media_dispersal =="marine")] <- "water"
+traits$media_dispersal[which(traits$media_dispersal =="aquatic")] <- "water"
 
 media_disp_distr <- traits %>%
   filter(media_dispersal == "air" | media_dispersal == "land" |
-           media_dispersal == "freshwater"| media_dispersal == "marine") %>%
+           media_dispersal == "water") %>%
   ggplot(aes(x = media_dispersal, y = dispersal_km))+
     geom_violin(aes(color = media_dispersal, fill = media_dispersal))  + 
   geom_boxplot(width = 0.2)+
@@ -191,12 +191,12 @@ media_disp_distr <- traits %>%
   theme(legend.position = "none")
 
 
-traits$media_migration[which(traits$media_migration =="water")] <- "freshwater"
-traits$media_foraging[which(traits$media_foraging =="aquatic")] <- "freshwater"
+traits$media_migration[which(traits$media_migration =="marine")] <- "water"
+traits$media_migration[which(traits$media_migration =="aquatic")] <- "water"
 
 media_mig_distr <- traits %>%
   filter(media_migration == "air" | media_migration == "land" |
-           media_migration == "freshwater"| media_migration == "marine") %>%
+           media_migration == "water") %>%
 ggplot(aes(x = media_migration, y = (Migration_km + 1)))+
     geom_violin(aes(color = media_migration, fill = media_migration))  + 
   geom_boxplot(width = 0.2)+
@@ -332,7 +332,7 @@ gI$heights <- gC$heights
 
 
 while (!is.null(dev.list()))  dev.off()
-jpeg(filename = "../figures/distr_by_hypothesis_May2023.jpeg", width = 12, height = 11, units = 'in', res = 1000)
+jpeg(filename = "../figures/Figure02_07Aug2023.jpeg", width = 12, height = 11, units = 'in', res = 1000)
 grid.arrange(gG, gH, gI, gA, gB, gC, gD,gE, gF, nrow = 3, padding = 2)
 dev.off()
 
@@ -439,7 +439,7 @@ gD$heights <- gC$heights
 # The legend boxes are centered
 
 while (!is.null(dev.list()))  dev.off()
-jpeg(file = "../figures/Figure3_01May2023.jpeg", width = 10, height = 10, units = "in", res = 1000)
+jpeg(file = "../figures/Figure3_07Aug2023.jpeg", width = 10, height = 10, units = "in", res = 1000)
 grid.arrange(gA, gC, gB, gD, nrow = 2, padding = 2)
 dev.off()
 
@@ -449,7 +449,7 @@ dev.off()
 
 The following code chunk generates Figure 5.
 
-```{r Figure 5 predicted draws}
+```{r Figure 5 class}
 
 class_dispersal <- readRDS("../mods/class.disp_withyear.rds")
 class_foraging <- readRDS("../mods/class.for_withyear.rds")
@@ -641,7 +641,7 @@ gF$widths <- gC$widths
 # Figure5 <- ggarrange(class_figs, diet_figs, nrow=2, common.legend=FALSE)
 
 while (!is.null(dev.list()))  dev.off()
-jpeg(filename = "Fig5_epreds_01May2023.jpeg", width = 10, height = 10, units = 'in', res = 1000)
+jpeg(filename = "../figures/Fig5_epreds_07Aug2023.jpeg", width = 10, height = 10, units = 'in', res = 1000)
 grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 3, padding = 2)
 dev.off()
 
@@ -991,8 +991,9 @@ gD$widths <- gC$widths
 gE$widths <- gC$widths
 gF$widths <- gC$widths
 
+
 while (!is.null(dev.list()))  dev.off()
-jpeg(filename = "Fig2a_migrators_03May2023.jpeg", width = 10, height = 10, units = 'in', res = 1000)
+jpeg(filename = "../figures/FigS2_migrators_07Aug2023.jpeg", width = 10, height = 10, units = 'in', res = 1000)
 grid.arrange(gA, gD, gB, gE,gC, gF, nrow = 3, padding = 2)
 dev.off()
 ```
@@ -1000,6 +1001,7 @@ dev.off()
 Non-migrators only
 
 ```{r Fig S3 non-migrators only}
+
 traits_nonmigrators <- traits %>% filter(Migration_km == 0)
 
 ## class
@@ -1110,8 +1112,8 @@ gC$widths <- gB$widths
 gD$widths <- gB$widths
 
 while (!is.null(dev.list()))  dev.off()
-jpeg(filename = "FigS3_nonmigrators_03May2023.jpeg", width = 10, height = 7, units = 'in', res = 1000)
-grid.arrange(gA, gB, gC, gD, nrow = 2, padding = 2)
+jpeg(filename = "../figures/FigS3_nonmigrators_03May2023.jpeg", width = 10, height = 7, units = 'in', res = 1000)
+grid.arrange(gA, gC, gB, gD, nrow = 2, padding = 2)
 dev.off()
 ```
 
