@@ -3,7 +3,7 @@
 .Rdata
 .httr-oauth
 .DS_Store
-#figures/
+figures/
 mods/pre_GEBrevisions
 data/.DS_Store
 data/defunct/

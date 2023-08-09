@@ -516,7 +516,14 @@ phylo_for_withyear <- readRDS("../mods/phylo_for_withyear_migrators.rds")
 phylo_disp_withyear <- readRDS("../mods/phylo_disp_withyear_migrators.rds")
 phylo_mig_withyear <- readRDS("../mods/phylo_mig_withyear_migrators.rds")
 
-summary(phylo_for_withyear)
+loo(phylo_for_withyear)
+bayes_R2(phylo_for_withyear)
+
+loo(phylo_disp_withyear)
+bayes_R2(phylo_disp_withyear)
+
+loo(phylo_mig_withyear)
+bayes_R2(phylo_mig_withyear)
 
 class_for_withyear <- readRDS("../mods/class.for_withyear.rds")
 class_disp_withyear <- readRDS("../mods/class.disp_withyear.rds")
