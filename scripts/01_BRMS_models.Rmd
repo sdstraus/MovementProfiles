@@ -31,6 +31,16 @@ null.disp_withyear <- brm(bf_dispersal_null_withyear, data = traits_phylo, iter 
 null.for_withyear <- brm(bf_home_range_null_withyear, data = traits_phylo, iter = 3000)
 null.mig_withyear <- brm(bf_migration_null_withyear, data = traits_phylo, iter = 3000)
 
+## adding max vs mean as random effect for dispersal model
+bf_dispersal_null_withyear_withmax <- bf(dispersal_km ~ log(Mass_kg) + dispersal_year + (log(Mass_kg)|dispersal_type)) + lognormal(link = "identity")
+
+
+null.disp_withyear_withmax <- brm(bf_dispersal_null_withyear_withmax, data = traits_phylo,
+                      control = list(adapt_delta = 0.995, max_treedepth=20), iter = 5000)
+
+
+
+
 ```
 
 
@@ -39,6 +49,19 @@ save univariate null mods
 saveRDS(null.disp_withyear, "../mods/null.disp_withyear.rds")
 saveRDS(null.for_withyear, "../mods/null.for_withyear.rds")
 saveRDS(null.mig_withyear, "../mods/null.mig_withyear.rds") 
+
+saveRDS(null.disp_withyear_withmax, "../mods/null.disp_withyear_withmax.rds")
+
+
+# read mods
+null.disp_withyear <- readRDS("../mods/null.disp_withyear.rds")
+null.for_withyear <- readRDS("../mods/null.for_withyear.rds")
+null.mig_withyear <- readRDS("../mods/null.mig_withyear.rds")
+
+fixef(null.disp_withyear)
+fixef(null.disp_withyear_withmax)
+ranef(null.disp_withyear_withmax)
+
 
 ```
 +/-

@@ -9,10 +9,13 @@ output: html_document
 # source("class_for_sp.R", local = knitr::knit_global())
 # source("datelife_tree.R", local = knitr::knit_global())
 
+library(tidyverse)
+library(dplyr)
+
 ```
 
 ```{r cleaning columns, include=FALSE}
-traits_clean <- read.csv("/Users/sam/github/SUPSmods/data/cleaned_traits.csv", fileEncoding="latin1")
+traits_clean <- read.csv("/Users/sam/github/SUPSmods/data/traits_dispersal_type_meanmedmax.csv", fileEncoding="latin1")
 
 # ## load phylogeny
 
@@ -30,7 +33,7 @@ traits <- traits_clean %>%
   dplyr::filter(str_replace(scientific_name.x, " ", "_") %in% one_phylo$tip.label) %>% 
   select(scientific_name.x, dispersal_km, Migration_km, mean.hra.m2, Mass_kg, 
          class, order, diet_broadest_cat, media_simplified, media_dispersal, 
-         media_migration, media_foraging, source_dispersal, Migration_source, source_hra) %>% 
+         media_migration, media_foraging, source_dispersal, Migration_source, source_hra, dispersal_type) %>% 
   mutate(scientific_name.x = str_replace(scientific_name.x, " ", "_")) %>% 
   mutate(dispersal_km = dispersal_km + 0.0001) %>% 
   mutate(mean.hra.m2 = as.numeric(as.character(mean.hra.m2))) %>% 
@@ -216,6 +219,34 @@ traits_num <- traits %>%
   mutate(dispersal_year = as.numeric(dispersal_year)) %>% 
   mutate(foraging_year = as.numeric(migration_year)) %>% 
   mutate(migration_year = as.numeric(migration_year))
+
+```
+
+```{r clean up dispersal type}
+table(traits_num$dispersal_type)
+
+# quick and dirty manual cleaning
+
+#assign as max
+traits_num$dispersal_type[which(traits_num$dispersal_type == "max (up to)")] <- "max"
+traits_num$dispersal_type[which(traits_num$dispersal_type == "max?")] <- "max"
+traits_num$dispersal_type[which(traits_num$dispersal_type == "max? (up to)")] <- "max"
+traits_num$dispersal_type[which(traits_num$dispersal_type == "max? (up to)")] <- "max"
+traits_num$dispersal_type[which(traits_num$dispersal_type == "max? from map")] <- "max"
+
+#assign as mean_med_mode
+traits_num$dispersal_type[which(traits_num$dispersal_type == "mean")] <- "mean_med_mode"
+traits_num$dispersal_type[which(traits_num$dispersal_type == "mean of medians")] <- "mean_med_mode"
+traits_num$dispersal_type[which(traits_num$dispersal_type == "median")] <- "mean_med_mode"
+traits_num$dispersal_type[which(traits_num$dispersal_type == "mode")] <- "mean_med_mode"
+traits_num$dispersal_type[which(traits_num$dispersal_type == "single measure")] <- "mean_med_mode"
+
+table(traits_num$dispersal_type)
+
+
+# exploration
+table(traits_num$dispersal_type, traits_num$class)
+
 
 ```
 
