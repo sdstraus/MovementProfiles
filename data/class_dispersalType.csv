@@ -1,0 +1,11 @@
+Var1,Var2,Freq
+Amphibia,max,18
+Aves,max,90
+Chondrichthyes,max,5
+Mammalia,max,52
+Reptilia,max,19
+Amphibia,mean_med_mode,3
+Aves,mean_med_mode,68
+Chondrichthyes,mean_med_mode,0
+Mammalia,mean_med_mode,63
+Reptilia,mean_med_mode,1

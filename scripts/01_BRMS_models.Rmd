@@ -81,6 +81,8 @@ null_multivar <- brm(bf_dispersal_null + bf_home_range_null + bf_migration_null,
                      data = traits_phylo, cores = 4, iter = 3000)
 
 saveRDS(null_multivar, "../mods/null_multivar.rds")
+
+kable(class_type)
 ```
 
 

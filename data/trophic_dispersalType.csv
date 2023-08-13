@@ -1,0 +1,9 @@
+Var1,Var2,Freq
+Carnivore,max,63
+Herbivore,max,37
+Invertivore,max,52
+Omnivore,max,33
+Carnivore,mean_med_mode,32
+Herbivore,mean_med_mode,45
+Invertivore,mean_med_mode,37
+Omnivore,mean_med_mode,21
